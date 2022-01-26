@@ -4,7 +4,7 @@ from taylor_approximation import compute_derivatives
 from compute_preal_tables import kvec
 import json
 
-z = float(sys.argv[1])
+zs = [float(x) for x in sys.argv[1:]]
 
 # Remake the data grid:
 order = 4
@@ -18,27 +18,32 @@ output_shape = (len(kvec),14) # first row is kv
 center_ii = (order,)*Nparams
 P0grid = np.zeros( (Npoints,)*Nparams+ output_shape)
 
-# Load data
-for ii in range(Npoints):
-    for jj in range(Npoints):
-        for kk in range(Npoints):
-            #print(ii,jj,kk)
-            P0grid[ii,jj,kk] = np.loadtxt('data/preal/preal_z_%.2f/preal_%d_%d_%d.txt'%(z,ii,jj,kk))
+# Load data per z:
+
+outfile = '/global/cscratch1/sd/sfschen/BOSSxPlanck/emulator/emu/preal.json'
+fb = '/global/cscratch1/sd/sfschen/BOSSxPlanck/emulator/data/preal/'
+
+emu_dict = {}
+
+for z in zs:
+
+    # Load Grid
+    for ii in range(Npoints):
+        for jj in range(Npoints):
+            for kk in range(Npoints):
+                P0grid[ii,jj,kk] = np.loadtxt(fb+'preal_z_%.2f/preal_%d_%d_%d.txt'%(z,ii,jj,kk))
             
             
-# Now compute the derivatives
-derivs0 = compute_derivatives(P0grid, dxs, center_ii, 5)
+    # Now compute the derivatives
+    derivs0 = compute_derivatives(P0grid, dxs, center_ii, 5)
 
-# Now save:
-outfile = 'emu/preal_z_%.2f.json'%(z)
+    list0 = [ dd.tolist() for dd in derivs0 ]
 
-list0 = [ dd.tolist() for dd in derivs0 ]
-
-outdict = {'params': ['omegam', 'h', 'sigma8'],\
-           'x0': x0s,\
-           'kvec': kvec.tolist(),\
-           'derivs': list0}
+    emu_dict[z] = {'params': ['omegam', 'h', 'sigma8'],\
+                   'x0': x0s,\
+                   'kvec': kvec.tolist(),\
+                   'derivs': list0}
 
 json_file = open(outfile, 'w')
-json.dump(outdict, json_file)
+json.dump(emu_dict, json_file)
 json_file.close()
