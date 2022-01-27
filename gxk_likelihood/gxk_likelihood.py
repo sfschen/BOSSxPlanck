@@ -40,7 +40,6 @@ class GxKLikelihood(Likelihood):
                'H0':       None,\
                'ns':       None,\
                'omegam':   None,\
-               'sigma8_z': {'z': [0]},\
                'Hubble':   {'z': zgrid},\
                'comoving_radial_distance': {'z': zgrid}\
                }
@@ -55,7 +54,6 @@ class GxKLikelihood(Likelihood):
         """Return the log-likelihood."""
         pp  = self.provider
         OmM = pp.get_param('omegam')
-        sig8= pp.get_sigma8_z(0)[0]
         hub = pp.get_param('H0')/100.0
         # Make splines for chi(z) and E(z), converting to Mpc/h.
         zgrid = np.logspace(0,3.1,64)-1.0
@@ -71,7 +69,7 @@ class GxKLikelihood(Likelihood):
             # Fill in the parameter list, starting with the
             # cosmological parameters.
             if self.model.startswith('clpt'):
-                cpars = [OmM,hub,sig8]
+                cpars = [OmM,hub,logA]
             else:
                 raise RuntimeError("Unknown model.")
             # Extract some common parameters.
