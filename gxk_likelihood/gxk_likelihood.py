@@ -62,7 +62,11 @@ class GxKLikelihood(Likelihood):
         chiz  = Spline(zgrid,chiz)
         Eofz  = pp.get_Hubble(zgrid)
         Eofz  = Spline(zgrid,Eofz/(100*hub))
-        #
+        # We want to store some of this information in "self" for
+        # easy retrieval later.
+        self.thy = {}
+        # The windowed theory vectors will all be concatenated to
+        # form a large vector, called "obs" here.
         obs = np.array([],dtype='float')
         for i,suf in enumerate(self.suffx):
             zeff= float(self.zeff[i])
@@ -96,8 +100,10 @@ class GxKLikelihood(Likelihood):
                                 cpars,bparsA,bparsX,bparsM,\
                                 smag,Lmax=1251)
             thy = np.array([ell,clgg,clgk]).T
+            self.thy[suf]=thy.copy()
             # then "observe" it, appending the observations to obs.
             obs = np.append(obs,self.observe(thy,self.wla[i],self.wlx[i]))
+        self.obs = obs.copy()
         # Now compute chi^2 and return -ln(L)
         chi2 = np.dot(self.dd-obs,np.dot(self.cinv,self.dd-obs))
         return(-0.5*chi2)
