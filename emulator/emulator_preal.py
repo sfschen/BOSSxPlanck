@@ -45,14 +45,15 @@ class Emulator_Preal(object):
         self.update_cosmo(cpars)
         #
         if spectra == 'Pgg':
-            b1, b2, bs,b3, alpha, sn,= bpars
+            b1,b2,bs,alpha,sn = bpars
+            b3 = 0
             bias_monomials = np.array([1, b1, b1**2,\
                                        b2, b1*b2, b2**2,\
                                        bs, b1*bs, b2*bs, bs**2,\
                                        b3, b1*b3])
         elif spectra == 'Pgm':
-            b1, b2, bs, b3, alpha = bpars
-            sn = 0
+            b1,b2,bs,alpha = bpars
+            b3,sn = 0,0
             bias_monomials = np.array([1, 0.5*b1, 0,\
                                0.5*b2, 0, 0,\
                                0.5*bs, 0, 0, 0,\
