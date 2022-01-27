@@ -17,8 +17,15 @@ output_shape = (len(kvec),14) # 13 types of terms + kvec
 # First construct the grid
 order = 4
 # these are OmegaM, h, sigma8
-x0s = [0.31, 0.68, 0.73]; Nparams = len(x0s) # these are chosen to be roughly at the BOSS best fit value
+#x0s = [0.31, 0.68, 0.73]# these are chosen to be roughly at the BOSS best fit value
+#dxs = [0.01, 0.01, 0.05]
+
+# these are OmegaM, h, lnAs
+param_str = ['omegam', 'h', 'logA']
+x0s = [0.31, 0.68, 2.84]
 dxs = [0.01, 0.01, 0.05]
+
+Nparams = len(x0s)
 
 template = np.arange(-order,order+1,1)
 Npoints = 2*order + 1

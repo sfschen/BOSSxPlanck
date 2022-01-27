@@ -12,11 +12,14 @@ kvec = np.concatenate( ([0.0005,],\
 
 def compute_preal_tables(pars, z=0.61):
     
-    OmegaM, h, sigma8 = pars
-
+    # Commented out: old version using sigma8
+    
+    #OmegaM, h, sigma8 = pars
+    OmegaM, h, lnAs = pars
+    
     omega_b = 0.02242
 
-    lnAs =  3.047
+    #lnAs =  3.047
     ns = 0.9665
 
     nnu = 1
@@ -51,7 +54,8 @@ def compute_preal_tables(pars, z=0.61):
     # Calculate and renormalize power spectrum
     ki = np.logspace(-3.0,1.0,200)
     pi = np.array( [pkclass.pk_cb(k*h, z ) * h**3 for k in ki] )
-    pi = (sigma8/pkclass.sigma8())**2 * pi
+    #print(pkclass.sigma8())
+    #pi = (sigma8/pkclass.sigma8())**2 * pi
     
     # Now do the RSD
     modPT = LPT_RSD(ki, pi, kIR=0.2, jn=5,\
