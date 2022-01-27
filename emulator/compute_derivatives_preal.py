@@ -51,7 +51,7 @@ for z in zs:
         for jj in range(Npoints):
             for kk in range(Npoints):
                 fn = "preal_z_{:.2f}/".format(z)
-                fn+= "preal_{:d}_{:d}_{:d}.txt'.format(ii,jj,kk))
+                fn+= "preal_{:d}_{:d}_{:d}.txt'.format(ii,jj,kk)
                 P0grid[ii,jj,kk] = np.loadtxt(fb+fn)
     # Now compute the derivatives
     derivs0 = compute_derivatives(P0grid, dxs, center_ii, 5)
