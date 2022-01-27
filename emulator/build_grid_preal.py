@@ -11,7 +11,7 @@ import os
 
 from mpi4py import MPI
 
-if len(sys.argv!=3):
+if len(sys.argv)!=3:
     raise RuntimeError("Usage: "+sys.argv[0]+" <basedir> <z>")
 db= sys.argv[1]
 z = float(sys.argv[2])
