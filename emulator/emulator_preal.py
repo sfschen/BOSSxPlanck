@@ -4,13 +4,10 @@ from taylor_approximation import taylor_approximate
 
 
 class Emulator_Preal(object):
-    
     def __init__(self, emufilename):
-
         self.load(emufilename)
-        
         self.cpars = np.zeros(3)
-        self.ptabs  = {}
+        self.ptabs = {}
         #
     def load(self, emufilename):
         '''Load the Taylor series from emufilename and repackage it into
@@ -30,9 +27,7 @@ class Emulator_Preal(object):
         del(emu)
         #
     def update_cosmo(self, cpars):
-        '''
-        If the cosmology is not the same as the old one, update the ptables.
-        '''
+        '''If the cosmology is not the same as the old one, update the ptables.'''
         if not np.allclose(cpars, self.cpars):
             self.cpars = cpars
             for zstr in self.emu_dict.keys():
