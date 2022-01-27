@@ -55,6 +55,7 @@ class GxKLikelihood(Likelihood):
         pp  = self.provider
         OmM = pp.get_param('omegam')
         hub = pp.get_param('H0')/100.0
+        logA= pp.get_param('logA')
         # Make splines for chi(z) and E(z), converting to Mpc/h.
         zgrid = np.logspace(0,3.1,64)-1.0
         chiz  = pp.get_comoving_radial_distance(zgrid)*hub
