@@ -10,16 +10,8 @@ import sys
 from scipy.integrate   import simps
 from scipy.interpolate import InterpolatedUnivariateSpline as Spline
 from scipy.special     import hyp2f1
+from lcdm              import LCDM
 
-
-def D_of_z(OmM,zz):
-    """Scale-independent growth factor for flat LCDM."""
-    aa = 1./(1.+zz)
-    rr = (1-OmM)/OmM
-    t1 = hyp2f1(1./3,1,11./6,-aa**3*rr)
-    t2 = hyp2f1(1./3,1,11./6,-rr)
-    return( aa * t1/t2 )
-    #
 
 
 
@@ -58,14 +50,12 @@ class AngularPowerSpectra():
         Cshot = self.fchi**2/self.chival**2
         Cshot = simps(Cshot,x=self.chival)
         return(Cshot)
-    def __init__(self,OmM,chi_of_z,E_of_z,dndz,zeff,Nchi=201,Nz=251):
+    def __init__(self,OmM,dndz,zeff,Nchi=201,Nz=251):
         """Set up the class.
             OmM:  The value of Omega_m(z=0) for the cosmology.
-            chi_of_z: A function returning radial distance in Mpc/h given z.
-            E_of_z: A function returning H(z)/H(0) given z.
-            dndz: A numpy array (Nbin,2) containing dN/dz vs. z."""
+            dndz: A numpy array (Nbin,2) containing dN/dz vs. z.
+            zeff: The 'effective' redshift for computing P(k)."""
         # Copy the arguments, setting up the z-range.
-        self.Eofz = E_of_z
         self.Nchi = Nchi
         self.OmM  = OmM
         self.OmX  = 1.0-OmM
@@ -75,8 +65,12 @@ class AngularPowerSpectra():
         self.dndz = Spline(dndz[:,0],dndz[:,1],ext=1)(self.zz)
         # Normalize dN/dz.
         self.dndz = self.dndz/simps(self.dndz,x=self.zz)
+        # Make LCDM class and spline for E(z).
+        lcdm      = LCDM(OmM)
+        zgrid     = np.logspace(0,3.1,128)-1.0
+        self.Eofz = Spline(zgrid,lcdm.E_of_z(zgrid))
         # Set up the chi(z) array and z(chi) spline.
-        self.chiz = chi_of_z(self.zz)
+        self.chiz = lcdm.chi_of_z(self.zz)
         self.zchi = Spline(self.chiz,self.zz)
         # Work out W(chi) for the objects whose dNdz is supplied.
         chimin    = np.min(self.chiz)
@@ -92,7 +86,7 @@ class AngularPowerSpectra():
         # Set the effective redshift.
         self.zeff = zeff
         # and save linear growth.
-        self.ld2  = (D_of_z(self.OmM,zval)/D_of_z(self.OmM,self.zeff))**2
+        self.ld2  = (lcdm.D_of_z(zval)/lcdm.D_of_z(zeff))**2
         #
     def __call__(self,Emu,cpars,bparsA,bparsX,bparsM,smag=0.4,\
                  Nell=64,Lmax=1001):

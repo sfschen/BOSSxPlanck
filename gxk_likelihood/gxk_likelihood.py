@@ -5,6 +5,7 @@ import os
 from scipy.interpolate import InterpolatedUnivariateSpline as Spline
 from emulator_preal    import Emulator_Preal               as Emulator
 from predict_cl        import AngularPowerSpectra
+from lcdm              import LCDM
 from cobaya.likelihood import Likelihood
 
 
@@ -35,13 +36,8 @@ class GxKLikelihood(Likelihood):
         zgrid= np.logspace(0,3.1,64) - 1.0
         reqs = {\
                'logA':     None,\
-               'omch2':    None,\
-               'ombh2':    None,\
                'H0':       None,\
-               'ns':       None,\
                'omegam':   None,\
-               'Hubble':   {'z': zgrid},\
-               'comoving_radial_distance': {'z': zgrid}\
                }
         # Build the parameter names we require for each sample.
         for suf in self.suffx:
@@ -56,12 +52,11 @@ class GxKLikelihood(Likelihood):
         OmM = pp.get_param('omegam')
         hub = pp.get_param('H0')/100.0
         logA= pp.get_param('logA')
-        # Make splines for chi(z) and E(z), converting to Mpc/h.
+        # Make splines for chi(z) and E(z).
+        lcdm  = LCDM(OmM)
         zgrid = np.logspace(0,3.1,64)-1.0
-        chiz  = pp.get_comoving_radial_distance(zgrid)*hub
-        chiz  = Spline(zgrid,chiz)
-        Eofz  = pp.get_Hubble(zgrid)
-        Eofz  = Spline(zgrid,Eofz/(100*hub))
+        chiz  = Spline(zgrid,lcdm.chi_of_z(zgrid))
+        Eofz  = Spline(zgrid,lcdm.E_of_z(zgrid))
         # We want to store some of this information in "self" for
         # easy retrieval later.
         self.thy = {}
