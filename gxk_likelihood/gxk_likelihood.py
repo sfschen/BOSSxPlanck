@@ -85,7 +85,6 @@ class GxKLikelihood(Likelihood):
             if self.model.startswith('clpt'):
                 alpA  = pp.get_param('alpha_a_'+suf)
                 alpX  = pp.get_param('alpha_x_'+suf)
-                alpM  = pp.get_param('alpha_m_'+suf)
                 bparsA= [b1,b2,bs,alpA,sn]
                 bparsX= [b1,b2,bs,alpX]
             else:
