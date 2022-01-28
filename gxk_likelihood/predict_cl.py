@@ -88,7 +88,7 @@ class AngularPowerSpectra():
         # and save linear growth.
         self.ld2  = (lcdm.D_of_z(zval)/lcdm.D_of_z(zeff))**2
         #
-    def __call__(self,Emu,cpars,bparsA,bparsX,bparsM,smag=0.4,\
+    def __call__(self,Emu,cpars,bparsA,bparsX,smag=0.4,\
                  Nell=64,Lmax=1001):
         """Computes C_l^{gg} and C_l^{kg} given the emulator for P_{ij}, the
            cosmological parameters (cpars) plus bias params for auto (bparsA),
@@ -104,7 +104,7 @@ class AngularPowerSpectra():
         Pgg    = Spline(*Emu(pars,spectra='Pgg'))
         pars   = np.array(cpars+bparsX+[self.zeff])
         Pgm    = Spline(*Emu(pars,spectra='Pgm'))
-        pars   = np.array(cpars+bparsM+[self.zeff])
+        pars   = np.array(cpars+[self.zeff])
         Pmm    = Spline(*Emu(pars,spectra='Pmm'),ext=1) # Extrap. w/ zeros.
         # Work out the integrands for C_l^{gg} and C_l^{kg}.
         for i,chi in enumerate(self.chival):
