@@ -105,7 +105,7 @@ class AngularPowerSpectra():
         pars   = np.array(cpars+bparsX+[self.zeff])
         Pgm    = Spline(*Emu(pars,spectra='Pgm'))
         pars   = np.array(cpars+[self.zeff])
-        Pmm    = Spline(*Emu(pars,spectra='Pmm'),ext=1) # Extrap. w/ zeros.
+        Pmm    = Spline(*Emu(pars,spectra='Phf'),ext=1) # Extrap. w/ zeros.
         # Work out the integrands for C_l^{gg} and C_l^{kg}.
         for i,chi in enumerate(self.chival):
             kval     = (ell+0.5)/chi        # The vector of k's.
