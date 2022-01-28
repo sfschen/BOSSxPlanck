@@ -16,7 +16,8 @@ class GxKLikelihood(Likelihood):
     model:  str
     clsfn:  str
     covfn:  str
-    Emufn:  str
+    EmuPT:  str
+    EmuHF:  str
     zeff:   list
     suffx:  list
     dndzfn: list
@@ -30,10 +31,10 @@ class GxKLikelihood(Likelihood):
         # Load the data and invert the covariance matrix.
         self.loadData()
         self.cinv   = np.linalg.inv(self.cov)
-        self.Emu    = Emulator(self.Emufn)
+        # Set up the power spectrum emulator.
+        self.Emu    = Emulator(self.EmuPT,self.EmuHF)
     def get_requirements(self):
         """What we require."""
-        zgrid= np.logspace(0,3.1,64) - 1.0
         reqs = {\
                'logA':     None,\
                'H0':       None,\
@@ -65,7 +66,7 @@ class GxKLikelihood(Likelihood):
         obs = np.array([],dtype='float')
         for i,suf in enumerate(self.suffx):
             zeff= float(self.zeff[i])
-            aps = AngularPowerSpectra(OmM,chiz,Eofz,self.dndz[i],zeff)
+            aps = AngularPowerSpectra(OmM,self.dndz[i],zeff)
             # Fill in the parameter list, starting with the
             # cosmological parameters.
             if self.model.startswith('clpt'):
@@ -87,12 +88,11 @@ class GxKLikelihood(Likelihood):
                 alpM  = pp.get_param('alpha_m_'+suf)
                 bparsA= [b1,b2,bs,alpA,sn]
                 bparsX= [b1,b2,bs,alpX]
-                bparsM= [alpM]
             else:
                 raise RuntimeError("Unknown model.")
             # and call APS to get a prediction,
             ell,clgg,clgk = aps(self.Emu,\
-                                cpars,bparsA,bparsX,bparsM,\
+                                cpars,bparsA,bparsX,\
                                 smag,Lmax=1251)
             thy = np.array([ell,clgg,clgk]).T
             self.thy[suf]=thy.copy()
