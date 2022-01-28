@@ -4,12 +4,13 @@ from taylor_approximation import taylor_approximate
 
 
 class Emulator_Preal(object):
-    def __init__(self, emufilename):
-        self.load(emufilename)
+    def __init__(self, emufilename, halofitfilename):
+        self.load(emufilename, halofitfilename)
         self.cpars = np.zeros(3)
         self.ptabs = {}
+        self.phfs  = {}
         #
-    def load(self, emufilename):
+    def load(self, emufilename, halofitfilename):
         '''Load the Taylor series from emufilename and repackage it into
            a dictionary of arrays.'''
         # Load Taylor series json file from emufilename:
@@ -23,9 +24,21 @@ class Emulator_Preal(object):
             self.emu_dict[zstr] = {'kvec': np.array(emu[zstr]['kvec']),\
                                    'x0': emu[zstr]['x0'],\
                                    'derivs': [np.array(ll) for ll in emu[zstr]['derivs']]}
-        # and just do some tidying up.
         del(emu)
-        #
+        
+        # Now also load the halofit emulator
+        json_file = open(halofitfilename,'r')
+        emu = json.load( json_file )
+        json_file.close()
+        
+        self.halofit_dict = {}
+        for zstr in emu.keys():
+            self.halofit_dict[zstr] = {'kvec': np.array(emu[zstr]['kvec']),\
+                                       'x0': emu[zstr]['x0'],\
+                                       'derivs': [np.array(ll) for ll in emu[zstr]['derivs']]}
+            
+        del(emu)
+
     def update_cosmo(self, cpars):
         '''If the cosmology is not the same as the old one, update the ptables.'''
         if not np.allclose(cpars, self.cpars):
@@ -34,16 +47,25 @@ class Emulator_Preal(object):
                 self.ptabs[zstr] = taylor_approximate(cpars,\
                                                       self.emu_dict[zstr]['x0'],\
                                                       self.emu_dict[zstr]['derivs'], order=4)
+                self.phfs[zstr] = (self.halofit_dict[zstr]['kvec'],\
+                                   taylor_approximate(cpars,\
+                                                      self.halofit_dict[zstr]['x0'],\
+                                                      self.halofit_dict[zstr]['derivs'], order=4))
         #
     def __call__(self, params, spectra='Pgg'):
         '''Evaluate the Taylor series for the spectrum given by 'spectra'
            at the point given by 'params'.'''
         zstr  = str(params[-1])
         cpars = params[:3]
-        bpars = params[3:-1]
+        
         #
         self.update_cosmo(cpars)
         #
+        if spectra =='Phf':
+            return self.phfs[zstr]
+        else:
+            bpars = params[3:-1]
+        
         if spectra == 'Pgg':
             b1,b2,bs,alpha,sn = bpars
             b3 = 0
@@ -64,6 +86,8 @@ class Emulator_Preal(object):
                                0, 0, 0,\
                                0, 0, 0, 0,\
                                0, 0])
+
+        
         kvec = self.ptabs[zstr][:,0]
         za   = self.ptabs[zstr][:,-1]
         # the first row is kv, last row is za for countrterm
