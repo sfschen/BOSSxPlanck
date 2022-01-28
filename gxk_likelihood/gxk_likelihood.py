@@ -43,7 +43,7 @@ class GxKLikelihood(Likelihood):
         # Build the parameter names we require for each sample.
         for suf in self.suffx:
             for pref in ['b1','b2','bs','bn',\
-                         'alpha_a','alpha_x','alpha_m',\
+                         'alpha_a','alpha_x',\
                          'SN','smag']:
                 reqs[pref+'_'+suf] = None
         return(reqs)
