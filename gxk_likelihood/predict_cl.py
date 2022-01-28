@@ -77,7 +77,7 @@ class AngularPowerSpectra():
         chimax    = np.max(self.chiz)
         self.chival= np.linspace(chimin,chimax,Nchi)
         zval      = self.zchi(self.chival)
-        self.fchi = Spline(self.zz,self.dndz*self.E_of_z(self.zz))(zval)
+        self.fchi = Spline(self.zz,self.dndz*self.Eofz(self.zz))(zval)
         self.fchi/= simps(self.fchi,x=self.chival)
         # and W(chi) for the CMB
         self.chistar= lcdm.chi_of_z(1098.)
