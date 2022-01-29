@@ -50,9 +50,10 @@ class AngularPowerSpectra():
         Cshot = self.fchi**2/self.chival**2
         Cshot = simps(Cshot,x=self.chival)
         return(Cshot)
-    def __init__(self,OmM,dndz,zeff,Nchi=201,Nz=251):
+    def __init__(self,OmM,chils,dndz,zeff,Nchi=201,Nz=251):
         """Set up the class.
             OmM:  The value of Omega_m(z=0) for the cosmology.
+            chils:The (comoving) distance to last scattering (in Mpc/h).
             dndz: A numpy array (Nbin,2) containing dN/dz vs. z.
             zeff: The 'effective' redshift for computing P(k)."""
         # Copy the arguments, setting up the z-range.
@@ -80,7 +81,7 @@ class AngularPowerSpectra():
         self.fchi = Spline(self.zz,self.dndz*self.Eofz(self.zz))(zval)
         self.fchi/= simps(self.fchi,x=self.chival)
         # and W(chi) for the CMB
-        self.chistar= lcdm.chi_of_z(1098.)
+        self.chistar= chils
         self.fcmb = 1.5*self.OmM*(1.0/2997.925)**2*(1+zval)
         self.fcmb*= self.chival*(self.chistar-self.chival)/self.chistar
         # Set the effective redshift.

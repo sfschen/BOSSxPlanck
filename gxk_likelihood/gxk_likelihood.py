@@ -4,6 +4,7 @@ import os
 
 from scipy.interpolate import InterpolatedUnivariateSpline as Spline
 from emulator_preal    import Emulator_Preal               as Emulator
+from emulator_chils    import Chi_LS
 from predict_cl        import AngularPowerSpectra
 from lcdm              import LCDM
 from cobaya.likelihood import Likelihood
@@ -18,6 +19,7 @@ class GxKLikelihood(Likelihood):
     covfn:  str
     EmuPT:  str
     EmuHF:  str
+    EmuLS:  str
     zeff:   list
     suffx:  list
     dndzfn: list
@@ -30,9 +32,11 @@ class GxKLikelihood(Likelihood):
         """Sets up the class."""
         # Load the data and invert the covariance matrix.
         self.loadData()
-        self.cinv   = np.linalg.inv(self.cov)
+        self.cinv = np.linalg.inv(self.cov)
         # Set up the power spectrum emulator.
-        self.Emu    = Emulator(self.EmuPT,self.EmuHF)
+        self.Emu  = Emulator(self.EmuPT,self.EmuHF)
+        # and the distance to last scattering emulator.
+        self.chils= Chi_LS(self.EmuLS)
     def get_requirements(self):
         """What we require."""
         reqs = {\
@@ -58,6 +62,8 @@ class GxKLikelihood(Likelihood):
         zgrid = np.logspace(0,3.1,64)-1.0
         chiz  = Spline(zgrid,lcdm.chi_of_z(zgrid))
         Eofz  = Spline(zgrid,lcdm.E_of_z(zgrid))
+        # work out chi_{ls}.
+        zls = self.chils([OmM,hub])
         # We want to store some of this information in "self" for
         # easy retrieval later.
         self.thy = {}
@@ -66,7 +72,7 @@ class GxKLikelihood(Likelihood):
         obs = np.array([],dtype='float')
         for i,suf in enumerate(self.suffx):
             zeff= float(self.zeff[i])
-            aps = AngularPowerSpectra(OmM,self.dndz[i],zeff)
+            aps = AngularPowerSpectra(OmM,chils,self.dndz[i],zeff)
             # Fill in the parameter list, starting with the
             # cosmological parameters.
             if self.model.startswith('clpt'):
