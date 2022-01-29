@@ -63,7 +63,7 @@ class GxKLikelihood(Likelihood):
         chiz  = Spline(zgrid,lcdm.chi_of_z(zgrid))
         Eofz  = Spline(zgrid,lcdm.E_of_z(zgrid))
         # work out chi_{ls}.
-        zls = self.chils([OmM,hub])
+        chi_ls = self.chils([OmM,hub])
         # We want to store some of this information in "self" for
         # easy retrieval later.
         self.thy = {}
@@ -72,7 +72,7 @@ class GxKLikelihood(Likelihood):
         obs = np.array([],dtype='float')
         for i,suf in enumerate(self.suffx):
             zeff= float(self.zeff[i])
-            aps = AngularPowerSpectra(OmM,chils,self.dndz[i],zeff)
+            aps = AngularPowerSpectra(OmM,chi_ls,self.dndz[i],zeff)
             # Fill in the parameter list, starting with the
             # cosmological parameters.
             if self.model.startswith('clpt'):
