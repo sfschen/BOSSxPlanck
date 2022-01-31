@@ -1,0 +1,158 @@
+## Remove the CAMB/CLASS dependence.
+#theory:
+#  camb:
+#    extra_args:
+#      bbn_predictor: PArthENoPE_880.2_standard.dat
+#      lens_potential_accuracy: 1
+#      num_massive_neutrinos: 1
+#      nnu: 3.046
+#      mnu: 0.06
+#      tau: 0.07
+#      theta_H0_range:
+#      - 20
+#      - 100
+#    stop_at_error: True
+likelihood:
+  gxk_likelihood.GxKLikelihood:
+    model:  clpt
+    clsfn:  /global/cscratch1/sd/sfschen/BOSSxPlanck/data/gal_s13_cls.txt
+    covfn:  /global/cscratch1/sd/sfschen/BOSSxPlanck/data/gal_s13_cov.txt
+    EmuPT:  /global/cscratch1/sd/sfschen/BOSSxPlanck/emulator/emu/preal.json
+    EmuHF:  /global/cscratch1/sd/sfschen/BOSSxPlanck/emulator/emu/phalofit.json
+    EmuLS:  /global/cscratch1/sd/sfschen/BOSSxPlanck/emulator/emu/chi_ls.json
+    zeff:
+         -  0.61
+    suffx:
+         -  NGCz3
+    dndzfn:
+         -  /global/cscratch1/sd/sfschen/BOSSxPlanck/data/gal_s13_dndz.txt
+    wlafn:
+         -  /global/cscratch1/sd/sfschen/BOSSxPlanck/data/gal_s13_wla.txt
+    wlxfn:
+         -  /global/cscratch1/sd/sfschen/BOSSxPlanck/data/gal_s13_wlx.txt
+    acut:
+        -   1000
+    xcut:
+        -   1000
+    stop_at_error: True
+  #sn.pantheon: null
+  #bao.sixdf_2011_bao: null
+  #bao.sdss_dr7_mgs: null
+  #bao.sdss_dr12_consensus_bao: null
+params:
+  logA:
+    prior:
+      dist: uniform
+      min:  2.00
+      max:  4.00
+    ref:
+      dist:  norm
+      loc:   2.95
+      scale: 0.05
+    latex: \log(10^{10} A_\mathrm{s})
+  #ns:
+  #  value: 0.9665
+  #ombh2:
+  #  value: 0.02242
+  #  latex: \omega_b
+  omegam:
+    prior:
+      dist: uniform
+      min:  0.20
+      max:  0.40
+    ref:
+      dist: norm
+      loc:   0.30
+      scale: 0.01
+    latex: \Omega_\mathrm{m}
+  H0:
+    prior:
+      dist: uniform
+      min:  50.0
+      max:  100.0
+    latex: H_0
+  b1_NGCz3:
+    prior:
+      dist: uniform
+      min:  0.0
+      max:  3.0
+    ref:
+      dist:  norm
+      loc:   1.00
+      scale: 0.05
+    latex: b_{1}
+  b2_NGCz3:
+    prior:
+      dist: uniform
+      min:  -5.0
+      max:   5.0
+    ref:
+      dist:  norm
+      loc:   0.0
+      scale: 1.0
+    latex: b_{2}
+  bs_NGCz3:
+    prior:
+      dist: uniform
+      min:  -5.0
+      max:   5.0
+    ref:
+      dist:  norm
+      loc:   0.0
+      scale: 1.0
+    latex: b_{s}
+  bn_NGCz3: 0.0
+  alpha_a_NGCz3:
+    prior:
+      dist:  norm
+      loc:   0.0
+      scale: 50.
+    ref:
+      dist:  norm
+      loc:   0.0
+      scale: 5.0
+    latex: \alpha_{a}
+  alpha_x_NGCz3:
+    prior:
+      dist:  norm
+      loc:   0.0
+      scale: 50.
+    ref:
+      dist:  norm
+      loc:   0.0
+      scale: 5.0
+    latex: \alpha_{\times}
+  SN_NGCz3:
+    prior:
+      dist:  norm
+      loc:   7380.51
+      scale: 1000.
+    ref:
+      dist:  norm
+      loc:    7380.51
+      scale: 1000.0
+    latex: SN
+  smag_NGCz3:
+    prior:
+      dist: norm
+      loc:   1.05
+      scale: 0.11
+    ref:
+      dist:  norm
+      loc:   1.05
+      scale: 0.11
+    latex: s_{\mu}
+sampler:
+  mcmc:
+    #covmat: auto
+    learn_proposal: True
+    learn_proposal_Rminus1_max: 10.
+    output_every: 60s
+    measure_speeds: True
+    max_tries: 500
+    oversample_power: 0.4
+    proposal_scale: 1.5
+    Rminus1_stop: 0.01
+output: chains/gal_NGCz3_emu_clpt_lcdm
+timing: True
+stop_on_error: True
