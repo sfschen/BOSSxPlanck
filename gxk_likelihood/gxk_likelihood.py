@@ -136,6 +136,7 @@ class GxKLikelihood(Likelihood):
             raise RuntimeError("Inconsistent inputs: Nsamp mismatch.")
         self.xx = dd[:,0]
         self.dd = dd[:,1:].T.flatten()
+        self.input_cov = self.cov.copy()
         for j in range(Nsamp):
             for i in np.nonzero(self.xx>self.acut[j])[0]:           # Auto
                 ii = i + (2*j+0)*self.xx.size
