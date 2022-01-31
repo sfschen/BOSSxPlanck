@@ -20,17 +20,15 @@ from compute_sigma8 import compute_sigma8
 # If not I suggest chaning the theory class so that instead of being labelled by "zstr" it gets labelled by sample name.
 # And each sample name indexing the fiducial cosmology numbers (chi, Hz etc) in dictionaries. For another time...
 
-class JointLikelihood(Likelihood):
+class PkLikelihood(Likelihood):
     
     zfid: float
     Hz_fid: float
     chiz_fid: float
     
     fs_sample_names: list
-    bao_sample_names: list
-    
+ 
     fs_datfns: list
-    bao_datfns: list
 
     covfn: str
     
@@ -39,15 +37,12 @@ class JointLikelihood(Likelihood):
     fs_qmaxs: list
     fs_matMfns: list
     fs_matWfns: list
-    
-    bao_rmaxs: list
-    bao_rmins: list
+
 
     def initialize(self):
         """Sets up the class."""
         # Redshift Label for theory classes
         self.zstr = "%.2f" %(self.zfid)
-        print(self.bao_sample_names,self.bao_datfns)
         print(self.fs_sample_names,self.fs_datfns)
         
         print("We are here!")
@@ -61,11 +56,10 @@ class JointLikelihood(Likelihood):
     def get_requirements(self):
         
         req = {'taylor_pk_ell_mod': None,\
-               'taylor_xi_ell_mod': None,\
                'H0': None,\
                'sigma8': None,\
                'omegam': None,\
-                'logA': None}
+               'logA': None}
         
         for fs_sample_name in self.fs_sample_names:
             req_bias = { \
@@ -78,20 +72,7 @@ class JointLikelihood(Likelihood):
                    'SN2_' + fs_sample_name: None\
                    }
             req = {**req, **req_bias}
-        
-        for bao_sample_name in self.bao_sample_names:
-            req_bao = {\
-                   'B1_' + bao_sample_name: None,\
-                   'F_' +  bao_sample_name: None,\
-                   'M0_' + bao_sample_name: None,\
-                   'M1_' + bao_sample_name: None,\
-                   'M2_' + bao_sample_name: None,\
-                   'Q0_' + bao_sample_name: None,\
-                   'Q1_' + bao_sample_name: None,\
-                   'Q2_' + bao_sample_name: None,\
-                    }
-            req = {**req, **req_bao}
-            
+
         return(req)
     
     def logp(self,**params_values):
@@ -103,12 +84,7 @@ class JointLikelihood(Likelihood):
             fs_thy  = self.fs_predict(fs_sample_name)
             fs_obs  = self.fs_observe(fs_thy, fs_sample_name)
             thy_obs = np.concatenate( (thy_obs,fs_obs) )
-        
-        for bao_sample_name in self.bao_sample_names:
-            bao_thy = self.bao_predict(bao_sample_name)
-            bao_obs = self.bao_observe(bao_thy,bao_sample_name)
-            thy_obs = np.concatenate( (thy_obs, bao_obs) )
-            
+
         diff = self.dd - thy_obs
         
         chi2 = np.dot(diff,np.dot(self.cinv,diff))
@@ -146,25 +122,12 @@ class JointLikelihood(Likelihood):
             nos   = self.kdats[fs_sample_name] < 0
             self.fitiis[fs_sample_name] = np.concatenate( (yeses, nos, yeses, nos, nos ) )
         
-        self.rdats = {}
-        self.xi0dats = {}
-        self.xi2dats = {}
-        
-        for ii, bao_datfn in enumerate(self.bao_datfns):
-            bao_sample_name = self.bao_sample_names[ii]
-            bao_dat = np.loadtxt(bao_datfn)
-            self.rdats[bao_sample_name] = bao_dat[:,0]
-            self.xi0dats[bao_sample_name] = bao_dat[:,1]
-            self.xi2dats[bao_sample_name] = bao_dat[:,2]
+
         
         # Join the data vectors together
-        self.dd = []
-        
+        self.dd = []        
         for fs_sample_name in self.fs_sample_names:
             self.dd = np.concatenate( (self.dd, self.p0dats[fs_sample_name], self.p2dats[fs_sample_name]) )
-            
-        for bao_sample_name in self.bao_sample_names:
-            self.dd = np.concatenate( (self.dd, self.xi0dats[bao_sample_name], self.xi2dats[bao_sample_name]) )
 
         
         # Now load the covariance matrix.
@@ -198,28 +161,6 @@ class JointLikelihood(Likelihood):
                 cov[ii,ii] = 1e25
             
             startii += self.kdats[fs_sample_name].size
-        
-        for ss, bao_sample_name in enumerate(self.bao_sample_names):
-            
-            rcut = (self.rdats[bao_sample_name] < self.bao_rmins[ss])\
-                              | (self.rdats[bao_sample_name] > self.bao_rmaxs[ss])
-            
-            for i in np.nonzero(rcut)[0]:
-                ii = i + startii
-                cov[ii,:] = 0
-                cov[:,ii] = 0
-                cov[ii,ii] = 1e25
-                
-            startii += self.rdats[bao_sample_name].size
-            
-            for i in np.nonzero(rcut)[0]:
-                ii = i + startii
-                cov[ii,:] = 0
-                cov[:,ii] = 0
-                cov[ii,ii] = 1e25
-            
-            startii += self.rdats[bao_sample_name].size
-        
         
         # Copy it and save the inverse.
         self.cov  = cov
@@ -295,32 +236,7 @@ class JointLikelihood(Likelihood):
         
         return(tt)
         #
-    
-    def bao_predict(self, bao_sample_name):
-        
-        pp   = self.provider
-        
-        B1   = pp.get_param('B1_' + bao_sample_name)
-        F   = pp.get_param('F_' + bao_sample_name)
-        M0, M1, M2 = [pp.get_param(param_name + '_' + bao_sample_name) for param_name in ['M0','M1','M2']]
-        Q0, Q1, Q2 = [pp.get_param(param_name + '_' + bao_sample_name) for param_name in ['Q0','Q1','Q2']]
-        
-        taylorPTs = pp.get_result('taylor_xi_ell_mod')
-        rvec, xi0table, xi2table = taylorPTs[self.zstr]
-        
-        xi0t = xi0table[:,0] + B1*xi0table[:,1] + F*xi0table[:,2] \
-             + B1**2 * xi0table[:,3] + F**2 * xi0table[:,4] + B1*F*xi0table[:,5]
-        
-        xi2t = xi2table[:,0] + B1*xi2table[:,1] + F*xi2table[:,2] \
-             + B1**2 * xi2table[:,3] + F**2 * xi2table[:,4] + B1*F*xi2table[:,5]
-        
-        xi0t += polyval(1/rvec,[M0,M1,M2])
-        xi2t += polyval(1/rvec,[Q0,Q1,Q2])
-        
-        return np.array([rvec,xi0t,xi2t]).T
-    
 
-        
     def fs_observe(self,tt,fs_sample_name):
         """Apply the window function matrix to get the binned prediction."""
         
@@ -352,39 +268,6 @@ class JointLikelihood(Likelihood):
     
         return convolved_model
     
-    def bao_observe(self, tt, bao_sample_name):
-        '''
-        Bin the BAO results... probabaly should eventually use a matrix.
-        '''
-        
-        rdat = self.rdats[bao_sample_name]
-        
-        thy0 = Spline(tt[:,0],tt[:,1],ext='extrapolate')
-        thy2 = Spline(tt[:,0],tt[:,2],ext='extrapolate')
-        #thy4 = Spline(tt[:,0],tt[:,3],ext='extrapolate')
-        
-        dr   = rdat[1]- rdat[0]
-        
-        tmp0 = np.zeros_like(rdat)
-        tmp2 = np.zeros_like(rdat)
-        
-        for i in range(rdat.size):
-            
-            kl = rdat[i]-dr/2
-            kr = rdat[i]+dr/2
-
-            ss = np.linspace(kl, kr, 100)
-            p0     = thy0(ss)
-            tmp0[i]= np.trapz(ss**2*p0,x=ss)*3/(kr**3-kl**3)
-            p2     = thy2(ss)
-            tmp2[i]= np.trapz(ss**2*p2,x=ss)*3/(kr**3-kl**3)
-            #p4     = thy4(ss)
-            #tmp4[i]= np.trapz(ss**2*p4,x=ss)*3/(kr**3-kl**3)
-            
-        self.xith[bao_sample_name] = np.concatenate((tmp0,tmp2))
-        
-        return np.concatenate((tmp0,tmp2))
-    
 
 class Taylor_pk_theory_zs(Theory):
     """
@@ -392,7 +275,6 @@ class Taylor_pk_theory_zs(Theory):
     """
     zfids: list
     pk_filenames: list
-    xi_filenames: list
     
     def initialize(self):
         """Sets up the class by loading the derivative matrices."""
@@ -402,10 +284,9 @@ class Taylor_pk_theory_zs(Theory):
         self.taylors_pk = {}
         self.taylors_xi = {}
         
-        for zfid, pk_filename, xi_filename in zip(self.zfids, self.pk_filenames, self.xi_filenames):
+        for zfid, pk_filename in zip(self.zfids, self.pk_filenames):
             zstr = "%.2f"%(zfid)
             taylors_pk = {}
-            taylors_xi = {}
             
             # Load the power spectrum derivatives
             json_file = open(pk_filename, 'r')
@@ -423,24 +304,9 @@ class Taylor_pk_theory_zs(Theory):
             taylors_pk['derivs_p0'] = derivs_p0
             taylors_pk['derivs_p2'] = derivs_p2
             taylors_pk['derivs_p4'] = derivs_p4
-            
-            # Load the correlation function derivatives
-            json_file = open(xi_filename, 'r')
-            emu = json.load( json_file )
-            json_file.close()
-            
-            x0s = emu['x0']
-            rvec = emu['rvec']
-            derivs_x0 = [np.array(ll) for ll in emu['derivs0']]
-            derivs_x2 = [np.array(ll) for ll in emu['derivs2']]
-            
-            taylors_xi['x0'] = np.array(x0s)
-            taylors_xi['rvec'] = np.array(rvec)
-            taylors_xi['derivs_xi0'] = derivs_x0
-            taylors_xi['derivs_xi2'] = derivs_x2
+
 
             self.taylors_pk[zstr] = taylors_pk
-            self.taylors_xi[zstr] = taylors_xi
             
             del emu
     
@@ -480,7 +346,6 @@ class Taylor_pk_theory_zs(Theory):
         cosmopars = [OmM, hub, sig8]
         
         ptables = {}
-        xitables = {}
         
         for zfid in self.zfids:
             zstr = "%.2f" %(zfid)
@@ -498,18 +363,6 @@ class Taylor_pk_theory_zs(Theory):
             
             ptables[zstr] = (kv, p0ktable, p2ktable, p4ktable)
             
-            # Load xitables
-            x0s = self.taylors_xi[zstr]['x0']
-            derivs_xi0 = self.taylors_xi[zstr]['derivs_xi0']
-            derivs_xi2 = self.taylors_xi[zstr]['derivs_xi2']
-            
-            rv = self.taylors_xi[zstr]['rvec']
-            xi0table = taylor_approximate(cosmopars, x0s, derivs_xi0, order=3)
-            xi2table = taylor_approximate(cosmopars, x0s, derivs_xi2, order=3)
-            
-            xitables[zstr] = (rv, xi0table, xi2table)
-            
         #state['sigma8'] = sig8
         state['derived'] = {'sigma8': sig8}
         state['taylor_pk_ell_mod'] = ptables
-        state['taylor_xi_ell_mod'] = xitables
