@@ -109,6 +109,7 @@ class JointLikelihood(Likelihood):
             bao_obs = self.bao_observe(bao_thy,bao_sample_name)
             thy_obs = np.concatenate( (thy_obs, bao_obs) )
             
+        self.obs = thy_obs
         diff = self.dd - thy_obs
         
         chi2 = np.dot(diff,np.dot(self.cinv,diff))
