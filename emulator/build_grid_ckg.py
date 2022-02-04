@@ -14,7 +14,11 @@ suffix = sys.argv[4]
 
 mpi_rank = MPI.COMM_WORLD.Get_rank()
 mpi_size = MPI.COMM_WORLD.Get_size()
-print("Hello I am process {:d} of {:d}.".format(mpi_rank, mpi_size))
+
+if mpi_rank==0:
+    print(sys.argv[0]+" running on {:d} processes.".format(mpi_size))
+MPI.COMM_WORLD.Barrier()
+#print("Hello I am process {:d} of {:d}.".format(mpi_rank, mpi_size))
 
 # these are settings for OmegaM, h, lnAs
 param_str = ['omegam', 'h', 'logA']
@@ -33,14 +37,36 @@ Inds = [ind.flatten() for ind in Inds]
 center_ii = (order,)*Nparams
 Coords = np.meshgrid( *grid_axes, indexing='ij')
 
+if mpi_rank==0:
+    fb = db+'/data'
+    if not os.path.isdir(fb):
+        print("Making directory ",fb)
+        os.mkdir(fb)
+    else:
+        print("Found directory ",fb)
+    fb = db+'/data/ckg'
+    if not os.path.isdir(fb):
+        print("Making directory ",fb)
+        os.mkdir(fb)
+    else:
+        print("Found directory ",fb)
+    fb = db+'/data/ckg/ckg_'+suffix
+    if not os.path.isdir(fb):
+        print("Making directory ",fb)
+        os.mkdir(fb)
+    else:
+        print("Found directory ",fb)
+    #if not os.path.exists(fb): os.mkdir(fb)
+MPI.COMM_WORLD.Barrier()
+
+
 for nn, iis in enumerate(zip(*Inds)):
     if nn%mpi_size == mpi_rank:
         coord = [Coords[i][iis] for i in range(Nparams)]
         #print(coord,iis)
-        
+        #
         pnl = compute_Ckg_table(coord, dndz, zeff)
-        
-        fb = db+'data/ckg/ckg_%s/'%(suffix)
-        if not os.path.isdir(fb):
-            os.mkdir(fb)
+        #
+        fb = db+'/data/ckg/ckg_%s/'%(suffix)
         np.savetxt(fb+'ckg_%s_%d_%d_%d.txt'%(suffix,*iis),pnl)
+        #
