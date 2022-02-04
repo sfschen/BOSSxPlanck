@@ -108,8 +108,6 @@ class GxKLikelihood(Likelihood):
         # Now pack things and modify the covariance matrix to
         # "drop" some data points.
         Nsamp   = (dd.shape[1]-1)//2
-        if Nsamp!=len(self.dndz):
-            raise RuntimeError("Inconsistent inputs: Nsamp mismatch.")
         if Nsamp!=len(self.wla):
             raise RuntimeError("Inconsistent inputs: Nsamp mismatch.")
         if Nsamp!=len(self.wlx):
