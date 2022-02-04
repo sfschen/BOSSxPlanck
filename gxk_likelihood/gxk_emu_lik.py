@@ -18,10 +18,9 @@ class GxKLikelihood(Likelihood):
     model:  str
     clsfn:  str
     covfn:  str
-    Emufn:  str
+    Emufn:  list
     zeff:   list
     suffx:  list
-    dndzfn: list
     wlafn:  list
     wlxfn:  list
     acut:   list
@@ -32,8 +31,10 @@ class GxKLikelihood(Likelihood):
         # Load the data and invert the covariance matrix.
         self.loadData()
         self.cinv = np.linalg.inv(self.cov)
-        # Set up the power spectrum emulator.
-        self.Emu  = Emulator(self.Emufn)
+        # Load each of the emulators.
+        self.Emu = []
+        for fn in self.Emufn:
+            self.Emu.append(Emulator(fn))
     def get_requirements(self):
         """What we require."""
         reqs = {\
@@ -83,7 +84,7 @@ class GxKLikelihood(Likelihood):
             else:
                 raise RuntimeError("Unknown model.")
             # and call APS to get a prediction,
-            ell,clgk = self.Emu(cpars+bparsX+[smag,zeff])
+            ell,clgk = self.Emu[i](cpars+bparsX+[smag,zeff])
             clgg     = np.zeros_like(clgk)
             thy = np.array([ell,clgg,clgk]).T
             self.thy[suf]=thy.copy()
@@ -98,9 +99,6 @@ class GxKLikelihood(Likelihood):
         """Load the data, covariance and windows from files."""
         dd        = np.loadtxt(self.clsfn)
         self.cov  = np.loadtxt(self.covfn)
-        self.dndz = []
-        for fn in self.dndzfn:
-            self.dndz.append(np.loadtxt(fn))
         self.wla = []
         for fn in self.wlafn:
             self.wla.append(np.loadtxt(fn))
