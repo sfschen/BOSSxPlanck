@@ -29,7 +29,7 @@ output_shape = (1251,6)
 P0grid = np.zeros( (Npoints,)*Nparams+ output_shape)
 
 # Set up the paths and create an empty dictionary.
-fb      = db + 'data/ckg/'
+fb      = db + '/data/ckg/'
 emu_dict= {}
 
 for ii in range(Npoints):
