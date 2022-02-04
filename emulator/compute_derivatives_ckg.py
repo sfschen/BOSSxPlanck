@@ -50,7 +50,7 @@ emu_dict = {'params': param_str,\
             'derivs': list0}
 
 # Write the results to file.
-outfile   = db + 'emu/ckg_%s.json' %(suffix)
+outfile   = db + '/emu/ckg_%s.json' %(suffix)
 json_file = open(outfile, 'w')
 json.dump(emu_dict, json_file)
 json_file.close()
