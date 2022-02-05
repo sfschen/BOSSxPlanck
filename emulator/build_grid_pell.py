@@ -63,7 +63,7 @@ for nn, iis in enumerate(zip(*Inds)):
         #print(coord,iis)
         p0, p2, p4 = compute_pell_tables(coord,z=z,fid_dists=fid_dists)
         #
-        fb = '/data/boss_z_%.2f/'%(z)
+        fb = db + '/data/boss_z_%.2f/'%(z)
         #
         np.savetxt(fb + 'boss_p0_%d_%d_%d.txt'%(iis),p0)
         np.savetxt(fb + 'boss_p2_%d_%d_%d.txt'%(iis),p2)
