@@ -1,5 +1,6 @@
 import numpy as np
 import sys
+import os
 from mpi4py import MPI
 
 mpi_rank = MPI.COMM_WORLD.Get_rank()
