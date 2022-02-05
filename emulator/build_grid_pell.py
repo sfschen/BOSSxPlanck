@@ -7,7 +7,10 @@ fid_dists = np.loadtxt('fid_dists_z_%.2f.txt'%(z))
 
 mpi_rank = MPI.COMM_WORLD.Get_rank()
 mpi_size = MPI.COMM_WORLD.Get_size()
-print( "Hello I am process %d of %d." %(mpi_rank, mpi_size) )
+if mpi_rank==0:
+    print(sys.argv[0]+" running on {:d} processes.".format(mpi_size))
+MPI.COMM_WORLD.Barrier()
+#print( "Hello I am process %d of %d." %(mpi_rank, mpi_size) )
 
 # Set up the output k vector:
 from compute_pell_tables import compute_pell_tables, kvec
