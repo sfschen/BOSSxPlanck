@@ -11,7 +11,7 @@ mpi_rank = comm.Get_rank()
 mpi_size = comm.Get_size()
 print( "Hello I am process %d of %d." %(mpi_rank, mpi_size) )
 
-basedir = sys.argv[1]
+basedir = sys.argv[1] +'/'
 z = float(sys.argv[2])
 Omfid = float(sys.argv[3])
 
