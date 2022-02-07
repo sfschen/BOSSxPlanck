@@ -47,7 +47,16 @@ derivs0 = compute_derivatives(X0grid, dxs, center_ii, 5)
 
 # Now save:
 if mpi_rank == 0:
-
+    
+    # Make the emulator (emu) directory if it
+    # doesn't already exist.
+    fb = basedir+'emu'
+    if not os.path.isdir(fb):
+        print("Making directory ",fb)
+        os.mkdir(fb)
+    else:
+        print("Found directory ",fb)
+    #
     outfile = basedir+'emu/boss_s8.json'
 
     list0 = [ dd.tolist() for dd in derivs0 ]
