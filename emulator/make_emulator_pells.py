@@ -9,7 +9,9 @@ import json
 comm = MPI.COMM_WORLD
 mpi_rank = comm.Get_rank()
 mpi_size = comm.Get_size()
-print( "Hello I am process %d of %d." %(mpi_rank, mpi_size) )
+if mpi_rank==0:
+    print(sys.argv[0]+" running on {:d} processes.".format(mpi_size))
+#print( "Hello I am process %d of %d." %(mpi_rank, mpi_size) )
 
 basedir = sys.argv[1] +'/'
 z = float(sys.argv[2])
@@ -68,6 +70,18 @@ del(P0gridii, P2gridii, P4gridii)
 derivs0 = compute_derivatives(P0grid, dxs, center_ii, 5)
 derivs2 = compute_derivatives(P2grid, dxs, center_ii, 5)
 derivs4 = compute_derivatives(P4grid, dxs, center_ii, 5)
+
+if mpi_rank == 0:
+    # Make the emulator (emu) directory if it
+    # doesn't already exist.
+    fb = basedir+'emu'
+    if not os.path.isdir(fb):
+        print("Making directory ",fb)
+        os.mkdir(fb)
+    else:
+        print("Found directory ",fb)
+    #
+comm.Barrier()
 
 # Now save:
 outfile = basedir + 'emu/boss_z_%.2f_pkells.json'%(z)
