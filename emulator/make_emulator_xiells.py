@@ -72,6 +72,14 @@ if mpi_rank == 0:
     derivs0 = compute_derivatives(X0grid, dxs, center_ii, 5)
     derivs2 = compute_derivatives(X2grid, dxs, center_ii, 5)
 
+    # Make the emulator (emu) directory if it
+    # doesn't already exist.
+    fb = basedir+'emu'
+    if not os.path.isdir(fb):
+        print("Making directory ",fb)
+        os.mkdir(fb)
+    else:
+        print("Found directory ",fb)
     # Now save:
     outfile = basedir + 'emu/boss_z_%.2f_xiells.json'%(z)
 
