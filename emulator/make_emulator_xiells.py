@@ -1,7 +1,8 @@
 import numpy as np
-import sys
-from mpi4py import MPI
 import json
+import sys
+import os
+from mpi4py import MPI
 
 from compute_fid_dists import compute_fid_dists
 from compute_xiell_tables import compute_xiell_tables
