@@ -37,7 +37,7 @@ def make_plot():
         #
         for j in [0,1]:
             ax[j,i].set_xlim(0,0.25)
-        #ax[0,i].set_ylim(1,4)
+        ax[0,i].set_ylim(-100,2250)
         ax[0,i].get_xaxis().set_visible(False)
         ax[0,i].set_ylabel(r'$k P_\ell(k)\quad [h^2{\rm Mpc}^{-2}]$')
         ax[1,i].set_ylim(0,2)
@@ -88,6 +88,8 @@ def make_plot():
     plt.tight_layout()
     plt.savefig('plot_data_spectra.pdf')
     #
+
+
 
 
 
