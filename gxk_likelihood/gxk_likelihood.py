@@ -43,10 +43,11 @@ class GxKLikelihood(Likelihood):
                'logA':     None,\
                'H0':       None,\
                'omegam':   None,\
+               'sigma8':   None,\
                }
         # Build the parameter names we require for each sample.
         for suf in self.suffx:
-            for pref in ['b1','b2','bs','bn',\
+            for pref in ['bsig8','b2','bs','bn',\
                          'alpha_a','alpha_x',\
                          'SN','smag']:
                 reqs[pref+'_'+suf] = None
@@ -57,6 +58,7 @@ class GxKLikelihood(Likelihood):
         OmM = pp.get_param('omegam')
         hub = pp.get_param('H0')/100.0
         logA= pp.get_param('logA')
+        sig8= pp.get_param('sigma8')
         # Make splines for chi(z) and E(z).
         lcdm  = LCDM(OmM)
         zgrid = np.logspace(0,3.1,64)-1.0
@@ -80,7 +82,7 @@ class GxKLikelihood(Likelihood):
             else:
                 raise RuntimeError("Unknown model.")
             # Extract some common parameters.
-            b1  = pp.get_param('b1_'+suf)
+            b1  = pp.get_param('bsig8_'+suf)/sig8-1
             b2  = pp.get_param('b2_'+suf)
             bs  = pp.get_param('bs_'+suf)
             sn  = pp.get_param('SN_'+suf)
