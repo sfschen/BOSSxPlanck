@@ -32,14 +32,22 @@ def make_pkl_plot():
                              color=clst[j],fmt='s',mfc='None',label=hemi)
             ax[0,i].errorbar(pk[:,0]+offs,pk[:,0]*pk[:,2],yerr=100,\
                              color=clst[j],fmt='^',mfc='None')
+            # Plot the theory as lines.
+            thy = np.loadtxt(rsddb+"fits/"+
+                    "best_fit_pkl_{:s}z{:d}.txt".format(hemi,iz))
+            ax[0,i].plot(thy[:,0],thy[:,0]*thy[:,1],'-',color=clst[j])
+            ax[0,i].plot(thy[:,0],thy[:,0]*thy[:,2],':',color=clst[j])
             # Now the ratio to the theory.
-            pass
+            ax[1,i].errorbar(pk[:,0]+offs,pk[:,1]/thy[:,1],yerr=100/thy[:,1],\
+                             color=clst[j],fmt='s',mfc='None')
+            ax[1,i].errorbar(pk[:,0]+offs,pk[:,2]/thy[:,2],yerr=100/thy[:,1],\
+                             color=clst[j],fmt='^',mfc='None')
         ax[0,i].legend(title="$z={:.2f}$".format(zz),loc=1)
         #
         ax[1,i].axhline(1.0,ls=':',color='k')
         #
         for j in range(2):
-            ax[j,i].set_xlim(0.005,0.25)
+            ax[j,i].set_xlim(0.005,0.20)
         ax[0,i].set_ylim(-100,2250)
         ax[1,i].set_ylim(0,2)
         ax[1,i].set_xlabel(r'$k\quad [h\ {\rm Mpc}^{-1}]$')
