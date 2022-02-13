@@ -1,24 +1,27 @@
 #!/usr/bin/env python
 #
-# Plots the power spectra (angular or multipole) for the
-# data and a fiducial model for each hemisphere and redshift.
+# Plots the power spectra (angular or multipole) and correlation
+# functions for the # data and a fiducial model for each hemisphere
+# and redshift.
 #
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Set up some labels, colors and linestyles to be
+# shared by all of the figures.
+zlst = [0.38,0.61]  # Effective redshifts.
+clst = ['C0','C1']  # Colors for NGC/SGC
+llst = ['--',':' ]
 
 
-def make_plot():
-    """Does the work of making the figure."""
-    angdb  = "data/"
+
+
+def make_pkl_plot():
+    """Does the work of making the P_ell(k) figure."""
     rsddb  = "rsd_data/"
-    fig,ax = plt.subplots(4,2,figsize=(10,8),\
-               gridspec_kw={'height_ratios':[3,1,3,1]})
-    # Set up some labels, colors and linestyles.
-    zlst = [0.38,0.61]  # Effective redshifts.
-    clst = ['C0','C1']  # Colors for NGC/SGC
-    llst = ['--',':' ]
-    # First plot the multipole power spectra.
+    fig,ax = plt.subplots(2,2,figsize=(8,3.5),sharex=True,\
+               gridspec_kw={'height_ratios':[3,1]})
+    # The multipole power spectra.
     for i,zz in enumerate(zlst):
         for j,hemi in enumerate(['NGC','SGC']):
             offs=0.001 if j==0 else -0.001
@@ -35,15 +38,38 @@ def make_plot():
         #
         ax[1,i].axhline(1.0,ls=':',color='k')
         #
-        for j in [0,1]:
-            ax[j,i].set_xlim(0,0.25)
+        for j in range(2):
+            ax[j,i].set_xlim(0.005,0.25)
         ax[0,i].set_ylim(-100,2250)
-        ax[0,i].get_xaxis().set_visible(False)
-        ax[0,i].set_ylabel(r'$k P_\ell(k)\quad [h^2{\rm Mpc}^{-2}]$')
         ax[1,i].set_ylim(0,2)
         ax[1,i].set_xlabel(r'$k\quad [h\ {\rm Mpc}]$')
-        ax[1,i].set_ylabel(r'Ratio')
-    # then the angular power spectra.
+    ax[0,0].set_ylabel(r'$k P_\ell(k)\quad [h^2{\rm Mpc}^{-2}]$')
+    ax[1,0].set_ylabel(r'Ratio')
+    for j in range(2):
+        ax[j,1].get_yaxis().set_visible(False)
+    #
+    plt.tight_layout()
+    plt.savefig('plot_data_pkl.pdf')
+    #
+
+
+
+
+
+def make_xil_plot():
+    """Does the work of making the xi_ell(s) figure."""
+    # For now a stub.
+    pass
+
+
+
+
+def make_cls_plot():
+    """Does the work of making the C_ell figure."""
+    angdb  = "data/"
+    fig,ax = plt.subplots(2,2,figsize=(8,3.5),sharex=True,\
+               gridspec_kw={'height_ratios':[3,1]})
+    # The angular power spectra.
     for i,zz in enumerate(zlst):
       for j,hemi in enumerate(["NGC","SGC"]):
         # Generate the file names
@@ -63,35 +89,40 @@ def make_plot():
             dcla[k] = np.sqrt( cov[k+0*Nbin,k+0*Nbin] )
             dclx[k] = np.sqrt( cov[k+1*Nbin,k+1*Nbin] )
         # Plot the cross-spectrum data and model.
-        ax[2,i].plot(best[:,0],1e6*best[:,2],'-',color=clst[j],label=hemi)
-        ax[2,i].errorbar(cls[:,0]+offs,1e6*cls[:,2],yerr=1e6*dclx,\
+        ax[0,i].plot(best[:,0],1e6*best[:,2],'-',color=clst[j],label=hemi)
+        ax[0,i].errorbar(cls[:,0]+offs,1e6*cls[:,2],yerr=1e6*dclx,\
                          color=clst[j],fmt='s',mfc='None')
-        ax[2,i].legend(title="$z={:.2f}$".format(zz),loc=1)
+        ax[0,i].legend(title="$z={:.2f}$".format(zz),loc=1)
         # Plot the ratio of the data over the theory for the cross-spectrum.
         ells = np.arange(wlx.shape[1])
         obs  = np.dot(wlx,np.interp(ells,best[:,0],best[:,2],right=0))
-        ax[3,i].errorbar(cls[:,0]+offs,cls[:,2]/obs,yerr=dclx/obs,\
+        ax[1,i].errorbar(cls[:,0]+offs,cls[:,2]/obs,yerr=dclx/obs,\
                          color=clst[j],fmt='s',mfc='None')
         #
-        ax[3,i].axhline(1.0,ls=':',color='k')
+        ax[1,i].axhline(1.0,ls=':',color='k')
         #
-        for j in [2,3]:
-            ax[j,i].set_xlim(0,375)
-        ax[2,i].set_yscale('log')
-        ax[2,i].set_ylim(0.01,10)
-        ax[2,i].set_ylabel(r'$10^6\ C_\ell$')
-        ax[2,i].get_xaxis().set_visible(False)
-        ax[3,i].set_ylim(0,2)
-        ax[3,i].set_xlabel(r'Multipole')
-        ax[3,i].set_ylabel(r'Ratio')
+        for j in [0,1]:
+            ax[j,i].set_xlim(1,375)
+        ax[0,i].set_yscale('log')
+        ax[0,i].set_ylim(0.02,3)
+        ax[1,i].set_ylim(0,2)
+        ax[1,i].set_xlabel(r'Multipole')
+    ax[0,0].set_ylabel(r'$10^6\ C_\ell$')
+    ax[1,0].set_ylabel(r'Ratio')
+    for j in range(2):
+        ax[j,1].get_yaxis().set_visible(False)
     #
     plt.tight_layout()
-    plt.savefig('plot_data_spectra.pdf')
+    plt.savefig('plot_data_cls.pdf')
     #
+
 
 
 
 
 
 if __name__=="__main__":
-    make_plot()
+    make_pkl_plot()
+    make_xil_plot()
+    make_cls_plot()
+    #
