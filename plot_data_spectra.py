@@ -79,12 +79,20 @@ def make_xil_plot():
         ax[0,i].errorbar(xi[:,0],xi[:,0]**2*xi[:,2],yerr=10,\
                          color=clst[0],fmt='^',mfc='None',label=r'$\ell=2$')
         ax[0,i].legend(title="$z={:.2f}$".format(zz),loc=1)
+        # Plot theory as lines.
+        thy = np.loadtxt(rsddb+"fits/best_fit_xil_z{:d}.txt".format(iz))
+        ax[0,i].plot(thy[:,0],thy[:,0]**2*thy[:,1],'-',color=clst[0])
+        ax[0,i].plot(thy[:,0],thy[:,0]**2*thy[:,2],':',color=clst[0])
         # Now the ratio to the theory.
+        ax[1,i].errorbar(xi[:,0],xi[:,1]/thy[:,1],yerr=10/thy[:,1],\
+                         color=clst[0],fmt='s',mfc='None')
+        ax[1,i].errorbar(xi[:,0],xi[:,2]/thy[:,2],yerr=10/thy[:,2],\
+                         color=clst[0],fmt='^',mfc='None')
         ax[1,i].axhline(1.0,ls=':',color='k')
         #
         for j in range(2):
-            ax[j,i].set_xlim(75,125)
-        ax[0,i].set_ylim(0,100)
+            ax[j,i].set_xlim(80,130)
+        ax[0,i].set_ylim(0,75)
         ax[1,i].set_ylim(0,2)
         ax[1,i].set_xlabel(r'$s\quad [h^{-1}{\rm Mpc}]$')
     ax[0,0].set_ylabel(r'$i^\ell s^2 \xi_\ell(s)\quad [h^{-2}{\rm Mpc}^{2}]$')
