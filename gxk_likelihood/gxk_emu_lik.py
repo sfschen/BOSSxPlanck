@@ -16,6 +16,7 @@ from cobaya.likelihood import Likelihood
 class GxKLikelihood(Likelihood):
     # From yaml file.
     model:  str
+    basedir: str
     clsfn:  str
     covfn:  str
     Emufn:  list
@@ -41,10 +42,11 @@ class GxKLikelihood(Likelihood):
                'logA':     None,\
                'H0':       None,\
                'omegam':   None,\
+               'sigma8': None,\
                }
         # Build the parameter names we require for each sample.
         for suf in self.suffx:
-            for pref in ['b1','b2','bs','bn',\
+            for pref in ['bsig8','b2','bs','bn',\
                          'alpha_a','alpha_x',\
                          'SN','smag']:
                 reqs[pref+'_'+suf] = None
@@ -55,6 +57,7 @@ class GxKLikelihood(Likelihood):
         OmM = pp.get_param('omegam')
         hub = pp.get_param('H0')/100.0
         logA= pp.get_param('logA')
+        sigma8=pp.get_param('sigma8')
         # We want to store some of this information in "self" for
         # easy retrieval later.
         self.thy = {}
@@ -70,7 +73,7 @@ class GxKLikelihood(Likelihood):
                 raise RuntimeError("Unknown model.")
             # Extract some common parameters.
             zeff= float(self.zeff[i])
-            b1  = pp.get_param('b1_'+suf)
+            b1  = pp.get_param('bsig8_'+suf)/sigma8 - 1.
             b2  = pp.get_param('b2_'+suf)
             bs  = pp.get_param('bs_'+suf)
             sn  = pp.get_param('SN_'+suf)
@@ -97,14 +100,14 @@ class GxKLikelihood(Likelihood):
         #
     def loadData(self):
         """Load the data, covariance and windows from files."""
-        dd        = np.loadtxt(self.clsfn)
-        self.cov  = np.loadtxt(self.covfn)
+        dd        = np.loadtxt(self.basedir+self.clsfn)
+        self.cov  = np.loadtxt(self.basedir+self.covfn)
         self.wla = []
         for fn in self.wlafn:
-            self.wla.append(np.loadtxt(fn))
+            self.wla.append(np.loadtxt(self.basedir+fn))
         self.wlx = []
         for fn in self.wlxfn:
-            self.wlx.append(np.loadtxt(fn))
+            self.wlx.append(np.loadtxt(self.basedir+fn))
         # Now pack things and modify the covariance matrix to
         # "drop" some data points.
         Nsamp   = (dd.shape[1]-1)//2

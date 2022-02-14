@@ -13,7 +13,7 @@ from scipy.special import spherical_jn
 from scipy.integrate import simps
 
 from taylor_approximation import taylor_approximate
-from compute_sigma8 import compute_sigma8
+from compute_sigma8_class import Compute_Sigma8
 
 # Class to have a full-shape likelihood for a bunch of pieces of data from both galactic caps in the same z bin
 # Currently assumes all data have the same fiducial cosmology etc.
@@ -25,6 +25,8 @@ class JointLikelihood(Likelihood):
     zfid: float
     Hz_fid: float
     chiz_fid: float
+    
+    basedir: str
     
     fs_sample_names: list
     bao_sample_names: list
@@ -69,7 +71,7 @@ class JointLikelihood(Likelihood):
         
         for fs_sample_name in self.fs_sample_names:
             req_bias = { \
-                   'b1_' + fs_sample_name: None,\
+                   'bsig8_' + fs_sample_name: None,\
                    'b2_' + fs_sample_name: None,\
                    'bs_' + fs_sample_name: None,\
                    'alpha0_' + fs_sample_name: None,\
@@ -136,7 +138,7 @@ class JointLikelihood(Likelihood):
         
         for ii, fs_datfn in enumerate(self.fs_datfns):
             fs_sample_name = self.fs_sample_names[ii]
-            fs_dat = np.loadtxt(fs_datfn)
+            fs_dat = np.loadtxt(self.basedir+fs_datfn)
             self.kdats[fs_sample_name] = fs_dat[:,0]
             self.p0dats[fs_sample_name] = fs_dat[:,1]
             self.p2dats[fs_sample_name] = fs_dat[:,2]
@@ -153,7 +155,7 @@ class JointLikelihood(Likelihood):
         
         for ii, bao_datfn in enumerate(self.bao_datfns):
             bao_sample_name = self.bao_sample_names[ii]
-            bao_dat = np.loadtxt(bao_datfn)
+            bao_dat = np.loadtxt(self.basedir+bao_datfn)
             self.rdats[bao_sample_name] = bao_dat[:,0]
             self.xi0dats[bao_sample_name] = bao_dat[:,1]
             self.xi2dats[bao_sample_name] = bao_dat[:,2]
@@ -169,7 +171,7 @@ class JointLikelihood(Likelihood):
 
         
         # Now load the covariance matrix.
-        cov = np.loadtxt(self.covfn)
+        cov = np.loadtxt(self.basedir+self.covfn)
         
         # We're only going to want some of the entries in computing chi^2.
         
@@ -231,8 +233,8 @@ class JointLikelihood(Likelihood):
         self.matMs = {}
         self.matWs = {}
         for ii, fs_sample_name in enumerate(self.fs_sample_names):
-            self.matMs[fs_sample_name] = np.loadtxt(self.fs_matMfns[ii])
-            self.matWs[fs_sample_name] = np.loadtxt(self.fs_matWfns[ii])
+            self.matMs[fs_sample_name] = np.loadtxt(self.basedir+self.fs_matMfns[ii])
+            self.matWs[fs_sample_name] = np.loadtxt(self.basedir+self.fs_matWfns[ii])
         
         #
         
@@ -266,7 +268,7 @@ class JointLikelihood(Likelihood):
         #
         sig8 = pp.get_param('sigma8')
         #sig8 = pp.get_result('sigma8')
-        b1   = pp.get_param('b1_' + fs_sample_name)
+        b1   = pp.get_param('bsig8_' + fs_sample_name)/sig8 - 1.
         b2   = pp.get_param('b2_' + fs_sample_name)
         bs   = pp.get_param('bs_' + fs_sample_name)
         alp0 = pp.get_param('alpha0_' + fs_sample_name)
@@ -394,12 +396,18 @@ class Taylor_pk_theory_zs(Theory):
     zfids: list
     pk_filenames: list
     xi_filenames: list
+    s8_filename: str
+    basedir: str
     
     def initialize(self):
         """Sets up the class by loading the derivative matrices."""
         
         print("Loading Taylor series.")
         
+        # First Load Sigma8 class:
+        self.compute_sigma8 = Compute_Sigma8(self.basedir + self.s8_filename)
+        
+        # Then Load Clustering
         self.taylors_pk = {}
         self.taylors_xi = {}
         
@@ -409,7 +417,7 @@ class Taylor_pk_theory_zs(Theory):
             taylors_xi = {}
             
             # Load the power spectrum derivatives
-            json_file = open(pk_filename, 'r')
+            json_file = open(self.basedir+pk_filename, 'r')
             emu = json.load( json_file )
             json_file.close()
             
@@ -426,7 +434,7 @@ class Taylor_pk_theory_zs(Theory):
             taylors_pk['derivs_p4'] = derivs_p4
             
             # Load the correlation function derivatives
-            json_file = open(xi_filename, 'r')
+            json_file = open(self.basedir+xi_filename, 'r')
             emu = json.load( json_file )
             json_file.close()
             
@@ -477,7 +485,7 @@ class Taylor_pk_theory_zs(Theory):
         logA = pp.get_param('logA')
         #sig8 = pp.get_param('sigma8')
         OmM = pp.get_param('omegam')
-        sig8 = compute_sigma8(OmM,hub,logA)
+        sig8 = self.compute_sigma8.compute_sigma8(OmM,hub,logA)
         cosmopars = [OmM, hub, sig8]
         
         ptables = {}

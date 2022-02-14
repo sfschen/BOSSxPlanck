@@ -15,6 +15,7 @@ from cobaya.likelihood import Likelihood
 class GxKLikelihood(Likelihood):
     # From yaml file.
     model:  str
+    basedir: str
     clsfn:  str
     covfn:  str
     EmuPT:  str
@@ -112,17 +113,17 @@ class GxKLikelihood(Likelihood):
         #
     def loadData(self):
         """Load the data, covariance and windows from files."""
-        dd        = np.loadtxt(self.clsfn)
-        self.cov  = np.loadtxt(self.covfn)
+        dd        = np.loadtxt(self.basedir+self.clsfn)
+        self.cov  = np.loadtxt(self.basedir+self.covfn)
         self.dndz = []
         for fn in self.dndzfn:
-            self.dndz.append(np.loadtxt(fn))
+            self.dndz.append(np.loadtxt(self.basedir+fn))
         self.wla = []
         for fn in self.wlafn:
-            self.wla.append(np.loadtxt(fn))
+            self.wla.append(np.loadtxt(self.basedir+fn))
         self.wlx = []
         for fn in self.wlxfn:
-            self.wlx.append(np.loadtxt(fn))
+            self.wlx.append(np.loadtxt(self.basedir+fn))
         # Now pack things and modify the covariance matrix to
         # "drop" some data points.
         Nsamp   = (dd.shape[1]-1)//2

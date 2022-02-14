@@ -3,7 +3,6 @@ import json
 from taylor_approximation import taylor_approximate
 
 
-
 s8_filename = '/global/cscratch1/sd/sfschen/finite_difference/emu/boss_s8.json'
 json_file = open(s8_filename, 'r')
 emu = json.load( json_file )
