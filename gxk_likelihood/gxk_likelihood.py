@@ -35,9 +35,9 @@ class GxKLikelihood(Likelihood):
         self.loadData()
         self.cinv = np.linalg.inv(self.cov)
         # Set up the power spectrum emulator.
-        self.Emu  = Emulator(self.EmuPT,self.EmuHF)
+        self.Emu  = Emulator(self.basedir+self.EmuPT,self.basedir+self.EmuHF)
         # and the distance to last scattering emulator.
-        self.chils= Chi_LS(self.EmuLS)
+        self.chils= Chi_LS(self.basedir+self.EmuLS)
     def get_requirements(self):
         """What we require."""
         reqs = {\

@@ -35,7 +35,7 @@ class GxKLikelihood(Likelihood):
         # Load each of the emulators.
         self.Emu = []
         for fn in self.Emufn:
-            self.Emu.append(Emulator(fn))
+            self.Emu.append(Emulator(self.basedir+fn))
     def get_requirements(self):
         """What we require."""
         reqs = {\
