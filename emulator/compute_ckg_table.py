@@ -6,7 +6,7 @@ from emulator_chils import Chi_LS
 from predict_cl import AngularPowerSpectra
 
 # Last Scattering
-basedir = '/global/cscratch1/sd/sfschen/BOSSxPlanck/emulator/'
+basedir = '/global/cscratch1/sd/sfschen/BOSSxPlanck/BOSSxPlanck/emulator/'
 chils_func= Chi_LS('./' + 'emu/chi_ls.json')
 
 # Galaxy Spectra
