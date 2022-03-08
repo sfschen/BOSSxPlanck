@@ -45,6 +45,7 @@ class GxKLikelihood(Likelihood):
                'H0':       None,\
                'omegam':   None,\
                'sigma8':   None,\
+               'gamma': None
                }
         # Build the parameter names we require for each sample.
         for suf in self.suffx:
@@ -60,6 +61,7 @@ class GxKLikelihood(Likelihood):
         hub = pp.get_param('H0')/100.0
         logA= pp.get_param('logA')
         sig8= pp.get_param('sigma8')
+        ck = (1 + pp.get_param('gamma'))/2.
         # Make splines for chi(z) and E(z).
         lcdm  = LCDM(OmM)
         zgrid = np.logspace(0,3.1,64)-1.0
@@ -87,7 +89,7 @@ class GxKLikelihood(Likelihood):
             b2  = pp.get_param('b2_'+suf)
             bs  = pp.get_param('bs_'+suf)
             sn  = pp.get_param('SN_'+suf)
-            smag= pp.get_param('smag_'+suf)
+            smag= ck * pp.get_param('smag_'+suf) - 2*(ck - 1)
             #
             # Do some parameter munging depending upon the model name
             # to fill in the rest of pars.
@@ -102,6 +104,10 @@ class GxKLikelihood(Likelihood):
             ell,clgg,clgk = aps(self.Emu,\
                                 cpars,bparsA,bparsX,\
                                 smag,Lmax=1251)
+            
+            # Correct for slip:
+            clgk *= ck
+            
             thy = np.array([ell,clgg,clgk]).T
             self.thy[suf]=thy.copy()
             # then "observe" it, appending the observations to obs.

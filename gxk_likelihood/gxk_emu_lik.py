@@ -43,6 +43,7 @@ class GxKLikelihood(Likelihood):
                'H0':       None,\
                'omegam':   None,\
                'sigma8': None,\
+               'gamma': None,
                }
         # Build the parameter names we require for each sample.
         for suf in self.suffx:
@@ -57,7 +58,8 @@ class GxKLikelihood(Likelihood):
         OmM = pp.get_param('omegam')
         hub = pp.get_param('H0')/100.0
         logA= pp.get_param('logA')
-        sigma8=pp.get_param('sigma8')
+        sigma8 = pp.get_param('sigma8')
+        ck = (1 + pp.get_param('gamma'))/2.
         # We want to store some of this information in "self" for
         # easy retrieval later.
         self.thy = {}
@@ -77,7 +79,9 @@ class GxKLikelihood(Likelihood):
             b2  = pp.get_param('b2_'+suf)
             bs  = pp.get_param('bs_'+suf)
             sn  = pp.get_param('SN_'+suf)
-            smag= pp.get_param('smag_'+suf)
+            # Magnification also gets modified by gravitational slip
+            # rescale to smag' such that c(5s - 2) = 5s' - 2
+            smag= ck * pp.get_param('smag_'+suf) - 2*(ck - 1)
             #
             # Do some parameter munging depending upon the model name
             # to fill in the rest of pars.
@@ -89,6 +93,10 @@ class GxKLikelihood(Likelihood):
             # and call APS to get a prediction,
             ell,clgk = self.Emu[i](cpars+bparsX+[smag,zeff])
             clgg     = np.zeros_like(clgk)
+            
+            #Correct for slip:
+            clgk *= ck
+            
             thy = np.array([ell,clgg,clgk]).T
             self.thy[suf]=thy.copy()
             # then "observe" it, appending the observations to obs.
