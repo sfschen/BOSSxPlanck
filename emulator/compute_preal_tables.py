@@ -52,10 +52,12 @@ def compute_preal_tables(pars, z=0.61):
     fnu = pkclass.Omega_nu / pkclass.Omega_m()
     f   = f_of_a(1/(1.+z), OmegaM=OmegaM) * (1 - 0.6 * fnu)
 
-    # Calculate and renormalize power spectrum
-    pi = np.array( [pkclass.pk_cb(k*h, z ) * h**3 for k in ki] )
-    #print(pkclass.sigma8())
-    #pi = (sigma8/pkclass.sigma8())**2 * pi
+    # Calculate the cb, m spectrum since we want galaxies x matter
+    
+    p_cb = np.array( [pkclass.pk_cb(k*h, z ) * h**3 for k in ki] )
+    p_mm = np.array( [pkclass.pk_lin(k*h, z ) * h**3 for k in ki] )
+
+    pi =  np.sqrt(p_cb * p_mm)
     
     # Now do the RSD
     modPT = LPT_RSD(ki, pi, kIR=0.2, jn=5,\
