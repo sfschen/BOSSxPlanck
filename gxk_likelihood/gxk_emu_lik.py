@@ -24,10 +24,10 @@ class GxKLikelihood(Likelihood):
     suffx:  list
     wlafn:  list
     wlxfn:  list
-    amax:   list
-    xmax:   list
     amin:   list
     xmin:   list
+    amax:   list
+    xmax:   list
     #
     def initialize(self):
         """Sets up the class."""
@@ -125,9 +125,13 @@ class GxKLikelihood(Likelihood):
             raise RuntimeError("Inconsistent inputs: Nsamp mismatch.")
         if Nsamp!=len(self.wlx):
             raise RuntimeError("Inconsistent inputs: Nsamp mismatch.")
-        if Nsamp!=len(self.acut):
+        if Nsamp!=len(self.amin):
             raise RuntimeError("Inconsistent inputs: Nsamp mismatch.")
-        if Nsamp!=len(self.xcut):
+        if Nsamp!=len(self.xmin):
+            raise RuntimeError("Inconsistent inputs: Nsamp mismatch.")
+        if Nsamp!=len(self.amax):
+            raise RuntimeError("Inconsistent inputs: Nsamp mismatch.")
+        if Nsamp!=len(self.xmax):
             raise RuntimeError("Inconsistent inputs: Nsamp mismatch.")
         self.xx = dd[:,0]
         self.dd = dd[:,1:].T.flatten()
