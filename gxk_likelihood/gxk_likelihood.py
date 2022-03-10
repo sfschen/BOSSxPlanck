@@ -26,8 +26,10 @@ class GxKLikelihood(Likelihood):
     dndzfn: list
     wlafn:  list
     wlxfn:  list
-    acut:   list
-    xcut:   list
+    amax:   list
+    xmax:   list
+    amin:   list
+    xmin:   list
     #
     def initialize(self):
         """Sets up the class."""
@@ -153,6 +155,16 @@ class GxKLikelihood(Likelihood):
                 self.cov[ :,ii] = 0
                 self.cov[ii,ii] = 1e15
             for i in np.nonzero(self.xx>self.xcut[j])[0]:           # Cross
+                ii = i + (2*j+1)*self.xx.size
+                self.cov[ii, :] = 0
+                self.cov[ :,ii] = 0
+                self.cov[ii,ii] = 1e15
+            for i in np.nonzero(self.xx<self.amin[j])[0]:           # Auto
+                ii = i + (2*j+0)*self.xx.size
+                self.cov[ii, :] = 0
+                self.cov[ :,ii] = 0
+                self.cov[ii,ii] = 1e15
+            for i in np.nonzero(self.xx<self.xmin[j])[0]:           # Cross
                 ii = i + (2*j+1)*self.xx.size
                 self.cov[ii, :] = 0
                 self.cov[ :,ii] = 0
