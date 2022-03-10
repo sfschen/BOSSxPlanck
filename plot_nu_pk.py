@@ -85,7 +85,7 @@ def make_plot():
     #
     ax[0].set_xlim(3e-3, 0.5)
     ax[0].set_ylim(0.990, 1.00)
-    ax[0].set_xlabel(r'$k\quad [h^{-3}{\rm Mpc}^{3}]$')
+    ax[0].set_xlabel(r'$k\quad [h\ {\rm Mpc}^{-1}]$')
     ax[0].set_ylabel(r'$P_{XY}/ P_{cb}$')
     #
     ax[1].semilogx(ki, OmegaM**2 * p_mm1/ (Omega_cb**2 * p_cb1), 'C1')
@@ -101,7 +101,7 @@ def make_plot():
     #
     ax[1].set_xlim(3e-3, 0.5)
     ax[1].set_ylim(0.999, 1.01)
-    ax[1].set_xlabel(r'$k\quad [h^{-3}{\rm Mpc}^3]$')
+    ax[1].set_xlabel(r'$k\quad [h\ {\rm Mpc}^{-1}]$')
     ax[1].set_ylabel(r'$\Omega_X \Omega_Y\ P_{XY}/ \Omega_{cb}^2 P_{cb}$')
     #
     plt.tight_layout()
