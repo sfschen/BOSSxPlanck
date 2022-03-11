@@ -9,6 +9,7 @@ gal_s11_cov.txt contains the corresponding covariance matrix (details given in t
 
 For the first digit, the samples 1 and 2 do not include FKP weights, 3 and 4 contain FKP
 weights while 5 and 6 include the FKP weights and the ratio of the lensing kernel and dN/dz.
+The results in the paper used s5? and s6?.
 
 Cross-correlations with the Planck kappa map in general use the MV map, but the files labeled
 "nosz" use the SZ deprojected map.
