@@ -1,0 +1,4 @@
+.ipynb_checkpoints/
+emulator/__pycache__/
+gxk_likelihood/__pycache__/
+rsd_likelihood/__pycache__/
