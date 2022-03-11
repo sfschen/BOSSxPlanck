@@ -135,14 +135,14 @@ def compute_xiells_fixedbias(pars, B1, F, z=0.61, fid_dists= (Hz_fid,chiz_fid), 
     OmegaM, h, sigma8 = pars
     Hzfid, chizfid = fid_dists
 
-    omega_b = 0.02242
+    omega_b = 0.02254
 
     lnAs =  3.047
-    ns = 0.9665
+    ns = 0.96
 
-    nnu = 1
-    nur = 2.033
-    mnu = 0.06
+    nnu = 0
+    nur = 3.046
+    mnu = 0.00
     omega_nu = 0.0106 * mnu
         
     omega_c = (OmegaM - omega_b/h**2 - omega_nu/h**2) * h**2
@@ -156,7 +156,6 @@ def compute_xiells_fixedbias(pars, B1, F, z=0.61, fid_dists= (Hz_fid,chiz_fid), 
         'h': h,
         'N_ur': nur,
         'N_ncdm': nnu,
-        'm_ncdm': mnu,
         'tau_reio': 0.0568,
         'omega_b': omega_b,
         'omega_cdm': omega_c}
@@ -176,7 +175,7 @@ def compute_xiells_fixedbias(pars, B1, F, z=0.61, fid_dists= (Hz_fid,chiz_fid), 
 
     # Calculate and renormalize power spectrum
     ki = np.logspace(-3.0,1.0,200)
-    pi = np.array( [pkclass.pk_cb(k*h, z ) * h**3 for k in ki] )
+    pi = np.array( [pkclass.pk_lin(k*h, z ) * h**3 for k in ki] )
     pi = (sigma8/pkclass.sigma8())**2 * pi
 
     # Do the Zeldovich reconstruction predictions
@@ -211,14 +210,14 @@ def compute_xiell_tables(pars, z=0.61, fid_dists= (Hz_fid,chiz_fid), R=15., rmin
     OmegaM, h, sigma8 = pars
     Hzfid, chizfid = fid_dists
 
-    omega_b = 0.02242
+    omega_b = 0.02254
 
     lnAs =  3.047
-    ns = 0.9665
+    ns = 0.96
 
-    nnu = 1
-    nur = 2.033
-    mnu = 0.06
+    nnu = 0
+    nur = 3.046
+    mnu = 0.00
     omega_nu = 0.0106 * mnu
         
     omega_c = (OmegaM - omega_b/h**2 - omega_nu/h**2) * h**2
@@ -232,7 +231,6 @@ def compute_xiell_tables(pars, z=0.61, fid_dists= (Hz_fid,chiz_fid), R=15., rmin
         'h': h,
         'N_ur': nur,
         'N_ncdm': nnu,
-        'm_ncdm': mnu,
         'tau_reio': 0.0568,
         'omega_b': omega_b,
         'omega_cdm': omega_c}
@@ -252,7 +250,7 @@ def compute_xiell_tables(pars, z=0.61, fid_dists= (Hz_fid,chiz_fid), R=15., rmin
 
     # Calculate and renormalize power spectrum
     ki = np.logspace(-3.0,1.0,200)
-    pi = np.array( [pkclass.pk_cb(k*h, z ) * h**3 for k in ki] )
+    pi = np.array( [pkclass.pk_lin(k*h, z ) * h**3 for k in ki] )
     pi = (sigma8/pkclass.sigma8())**2 * pi
 
     # Do the Zeldovich reconstruction predictions

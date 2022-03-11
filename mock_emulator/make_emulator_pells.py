@@ -32,7 +32,7 @@ output_shape = (len(kvec),19) # two multipoles and 19 types of terms
 
 order = 4
 # these are OmegaM, h, sigma8
-x0s = [0.31, 0.68, 0.73]; Nparams = len(x0s) # these are chosen to be roughly at the BOSS best fit value
+x0s = [0.31, 0.68, 0.80]; Nparams = len(x0s) # these are chosen to be roughly at the BOSS best fit value
 dxs = [0.01, 0.01, 0.05]
 
 template = np.arange(-order,order+1,1)

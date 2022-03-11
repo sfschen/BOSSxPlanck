@@ -42,4 +42,4 @@ if __name__ == '__main__':
     
     print("Computing fid. dists. for z = ", z)
 
-    np.savetxt('fid_dists_z_%.2f.txt'%(z), compute_fid_dists(z,0.31) )
+    np.savetxt('fid_dists_z_%.2f.txt'%(z), compute_fid_dists(z,0.286) )

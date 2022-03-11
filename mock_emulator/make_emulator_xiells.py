@@ -28,7 +28,7 @@ fid_dists = compute_fid_dists(z,Omfid)
 order = 4
 Npoints = 2*order + 1
 # these are OmegaM, h, sigma8
-x0s = [0.31, 0.68, 0.73]; Nparams = len(x0s)
+x0s = [0.31, 0.68, 0.80]; Nparams = len(x0s)
 dxs = [0.01, 0.01, 0.05]
 
 # Set output shape
