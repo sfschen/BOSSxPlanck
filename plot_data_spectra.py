@@ -21,16 +21,24 @@ def make_pkl_plot():
     rsddb  = "rsd_data/"
     fig,ax = plt.subplots(2,2,figsize=(8,3.1),sharex=True,\
                gridspec_kw={'height_ratios':[3,1]})
-    # The multipole power spectra -- NEED TO FIX ERROR BARS.
+    # The multipole power spectra.
     for i,zz in enumerate(zlst):
         for j,hemi in enumerate(['NGC','SGC']):
             offs=0.001 if j==0 else -0.001
             iz = 1 if i==0 else 3
             # The data itself.
             pk = np.loadtxt(rsddb+"pk/pk_{:s}_z{:d}.dat".format(hemi,iz))
-            ax[0,i].errorbar(pk[:,0]+offs,pk[:,0]*pk[:,1],yerr=100,\
+            cov= np.loadtxt(rsddb+\
+                 "covariances/cov_joint_NGCSGCXi_z{:d}.dat".format(iz))
+            err= np.sqrt(np.diag(cov))
+            Nk = pk.shape[0]
+            # Build the error bars.
+            dpk0 = err[0*Nk+j*2*Nk:1*Nk+j*2*Nk]
+            dpk2 = err[1*Nk+j*2*Nk:2*Nk+j*2*Nk]
+            #
+            ax[0,i].errorbar(pk[:,0]+offs,pk[:,0]*pk[:,1],yerr=pk[:,0]*dpk0,\
                              color=clst[j],fmt='s',mfc='None',label=hemi)
-            ax[0,i].errorbar(pk[:,0]+offs,pk[:,0]*pk[:,2],yerr=100,\
+            ax[0,i].errorbar(pk[:,0]+offs,pk[:,0]*pk[:,2],yerr=pk[:,0]*dpk2,\
                              color=clst[j],fmt='^',mfc='None')
             # Plot the theory as lines.
             thy = np.loadtxt(rsddb+"fits/"+
@@ -38,9 +46,9 @@ def make_pkl_plot():
             ax[0,i].plot(thy[:,0],thy[:,0]*thy[:,1],'-',color=clst[j])
             ax[0,i].plot(thy[:,0],thy[:,0]*thy[:,2],':',color=clst[j])
             # Now the ratio to the theory.
-            ax[1,i].errorbar(pk[:,0]+offs,pk[:,1]/thy[:,1],yerr=100/thy[:,1],\
+            ax[1,i].errorbar(pk[:,0]+offs,pk[:,1]/thy[:,1],yerr=dpk0/thy[:,1],\
                              color=clst[j],fmt='s',mfc='None')
-            ax[1,i].errorbar(pk[:,0]+offs,pk[:,2]/thy[:,2],yerr=100/thy[:,1],\
+            ax[1,i].errorbar(pk[:,0]+offs,pk[:,2]/thy[:,2],yerr=dpk2/thy[:,2],\
                              color=clst[j],fmt='^',mfc='None')
         ax[0,i].legend(title="$z={:.2f}$".format(zz),loc=1)
         #
@@ -72,11 +80,22 @@ def make_xil_plot():
     # The multipole power spectra.
     for i,zz in enumerate(zlst):
         iz = 1 if i==0 else 3
-        # The data itself -- NEED TO FIX ERROR BARS.
+        # The data itself.  Need to know the length of P(k) to
+        # properly unpack the covariance, so load this as well.
+        pk = np.loadtxt(rsddb+"pk/pk_{:s}_z{:d}.dat".format('NGC',iz))
+        Nk = pk.shape[0]
         xi = np.loadtxt(rsddb+"xi/z{:d}.xi".format(iz))
-        ax[0,i].errorbar(xi[:,0],xi[:,0]**2*xi[:,1],yerr=10,\
+        cov= np.loadtxt(rsddb+\
+             "covariances/cov_joint_NGCSGCXi_z{:d}.dat".format(iz))
+        err= np.sqrt(np.diag(cov))
+        Ns = xi.shape[0]
+        # Build the error bars.
+        dxi0 = err[4*Nk+0*Ns:4*Nk+1*Ns]
+        dxi2 = err[4*Nk+1*Ns:4*Nk+2*Ns]
+        #
+        ax[0,i].errorbar(xi[:,0],xi[:,0]**2*xi[:,1],yerr=xi[:,0]**2*dxi0,\
                          color=clst[0],fmt='s',mfc='None',label=r'$\ell=0$')
-        ax[0,i].errorbar(xi[:,0],xi[:,0]**2*xi[:,2],yerr=10,\
+        ax[0,i].errorbar(xi[:,0],xi[:,0]**2*xi[:,2],yerr=xi[:,0]**2*dxi2,\
                          color=clst[0],fmt='^',mfc='None',label=r'$\ell=2$')
         ax[0,i].legend(title="$z={:.2f}$".format(zz),loc=1)
         # Plot theory as lines.
@@ -84,9 +103,9 @@ def make_xil_plot():
         ax[0,i].plot(thy[:,0],thy[:,0]**2*thy[:,1],'-',color=clst[0])
         ax[0,i].plot(thy[:,0],thy[:,0]**2*thy[:,2],':',color=clst[0])
         # Now the ratio to the theory.
-        ax[1,i].errorbar(xi[:,0],xi[:,1]/thy[:,1],yerr=10/thy[:,1],\
+        ax[1,i].errorbar(xi[:,0],xi[:,1]/thy[:,1],yerr=dxi0/thy[:,1],\
                          color=clst[0],fmt='s',mfc='None')
-        ax[1,i].errorbar(xi[:,0],xi[:,2]/thy[:,2],yerr=10/thy[:,2],\
+        ax[1,i].errorbar(xi[:,0],xi[:,2]/thy[:,2],yerr=dxi2/thy[:,2],\
                          color=clst[0],fmt='^',mfc='None')
         ax[1,i].axhline(1.0,ls=':',color='k')
         #
@@ -114,11 +133,11 @@ def make_cls_plot():
                gridspec_kw={'height_ratios':[3,1]})
     # The angular power spectra.
     for i,zz in enumerate(zlst):
-      for j,hemi in enumerate(["NGC","SGC"]):
+      for j in range(1):
         # Generate the file names
         pref = "gal_s"+str(j+1)
         pref+= "1" if i==0 else "3"
-        offs = 3 if hemi=='NGC' else -3
+        offs = 0
         # and read the data.
         cls = np.loadtxt(angdb+pref+"_cls.txt")
         cov = np.loadtxt(angdb+pref+"_cov.txt")
@@ -132,7 +151,8 @@ def make_cls_plot():
             dcla[k] = np.sqrt( cov[k+0*Nbin,k+0*Nbin] )
             dclx[k] = np.sqrt( cov[k+1*Nbin,k+1*Nbin] )
         # Plot the cross-spectrum data and model.
-        ax[0,i].plot(best[:,0],1e6*best[:,2],'-',color=clst[j],label=hemi)
+        ax[0,i].plot(best[:,0],1e6*best[:,2],'-',\
+                     color=clst[j],label=r'$\kappa g$')
         ax[0,i].errorbar(cls[:,0]+offs,1e6*cls[:,2],yerr=1e6*dclx,\
                          color=clst[j],fmt='s',mfc='None')
         ax[0,i].legend(title="$z={:.2f}$".format(zz),loc=1)

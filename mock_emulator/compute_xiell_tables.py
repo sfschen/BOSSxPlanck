@@ -19,8 +19,8 @@ kvec = np.concatenate( ([0.0005,],\
                         np.arange(0.03,0.51,0.01)) )
 
 # Reference Cosmology:
-z = 0.61
-Omega_M = 0.31
+z = 0.7
+Omega_M = 0.286
 fb = 0.1571
 h = 0.6766
 ns = 0.9665
@@ -135,7 +135,7 @@ def compute_xiells_fixedbias(pars, B1, F, z=0.61, fid_dists= (Hz_fid,chiz_fid), 
     OmegaM, h, sigma8 = pars
     Hzfid, chizfid = fid_dists
 
-    omega_b = 0.02254
+    omega_b = 0.02303
 
     lnAs =  3.047
     ns = 0.96
@@ -210,7 +210,7 @@ def compute_xiell_tables(pars, z=0.61, fid_dists= (Hz_fid,chiz_fid), R=15., rmin
     OmegaM, h, sigma8 = pars
     Hzfid, chizfid = fid_dists
 
-    omega_b = 0.02254
+    omega_b = 0.02303
 
     lnAs =  3.047
     ns = 0.96
