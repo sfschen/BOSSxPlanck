@@ -82,7 +82,7 @@ def make_xil_plot():
         iz = 1 if i==0 else 3
         # The data itself.  Need to know the length of P(k) to
         # properly unpack the covariance, so load this as well.
-        pk = np.loadtxt(rsddb+"pk/pk_{:s}_z{:d}.dat".format(hemi,iz))
+        pk = np.loadtxt(rsddb+"pk/pk_{:s}_z{:d}.dat".format('NGC',iz))
         Nk = pk.shape[0]
         xi = np.loadtxt(rsddb+"xi/z{:d}.xi".format(iz))
         cov= np.loadtxt(rsddb+\
