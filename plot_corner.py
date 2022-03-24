@@ -57,9 +57,9 @@ for cc in chains:
 g = gdplt.get_subplot_plotter()
 g.triangle_plot(chains,\
                 ["omegam","H0","sigma8"],\
-                colors=clist,\
-                line_args=llist,\
+                colors=clist,line_args=llist,\
                 legend_labels=legnd,\
-                filled=True,alphas=[0.5]*len(chains))
+                filled=[True,True,False,False],\
+                alphas=[0.40,0.40,1.000,1.000])
 g.export('corner_plot.pdf')
 #
