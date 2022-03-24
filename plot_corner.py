@@ -21,10 +21,13 @@ db   = "/global/cscratch1/sd/mwhite/BOSS/Cobaya/"
 chains = []
 clist  = []
 llist  = []
-legnd  = []
+legnd  = [r'RSD+BAO',r'+$\kappa g$',r'+$\kappa g$ (SZ)',r'+$\kappa g\ (\ell>80)$']
 icol   = 0
 for yaml in [\
-            "rxk_zall_lcdm.yaml",\
+            "rsd_bao_zall.yaml",\
+            "rxk_ngc_lcdm.yaml",\
+            "rxk_nosz_ngc_lcdm.yaml",\
+            "rxk_ngc_lcdm_lcut1.yaml",\
             ]:
     info= yaml_load_file(db + yaml)
     cc  = loadMCSamples(db + info["output"],no_cache=True,\
