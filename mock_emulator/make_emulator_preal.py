@@ -16,7 +16,7 @@ from compute_preal_tables import compute_preal_tables, kvec
 from taylor_approximation import compute_derivatives
 
 
-if len(sys.argv)<=3:
+if len(sys.argv)<=2:
     raise RuntimeError("Usage: "+sys.argv[0]+" <basedir> <z1 z2 z3 ...>")
 db= sys.argv[1]
 zs = sys.argv[2:]; zs = [float(z) for z in zs]
