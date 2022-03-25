@@ -18,14 +18,14 @@ def compute_preal_tables(pars, z=0.61):
     #OmegaM, h, sigma8 = pars
     OmegaM, h, lnAs = pars
     
-    omega_b = 0.02242
+    omega_b = 0.02303
 
     #lnAs =  3.047
-    ns = 0.9665
+    ns = 0.96
 
-    nnu = 1
-    nur = 2.033
-    mnu = 0.06
+    nnu = 0
+    nur = 3.046
+    mnu = 0.00
     omega_nu = 0.0106 * mnu
         
     omega_c = (OmegaM - omega_b/h**2 - omega_nu/h**2) * h**2
@@ -39,7 +39,6 @@ def compute_preal_tables(pars, z=0.61):
         'h': h,
         'N_ur': nur,
         'N_ncdm': nnu,
-        'm_ncdm': mnu,
         'tau_reio': 0.0568,
         'omega_b': omega_b,
         'omega_cdm': omega_c}
@@ -53,11 +52,13 @@ def compute_preal_tables(pars, z=0.61):
     f   = f_of_a(1/(1.+z), OmegaM=OmegaM) * (1 - 0.6 * fnu)
 
     # Calculate the cb, m spectrum since we want galaxies x matter
+    # However in this case no neutrinos so just use pklin, or else CLASS will barf
     
-    p_cb = np.array( [pkclass.pk_cb(k*h, z ) * h**3 for k in ki] )
+    #p_cb = np.array( [pkclass.pk_cb(k*h, z ) * h**3 for k in ki] )
     p_mm = np.array( [pkclass.pk_lin(k*h, z ) * h**3 for k in ki] )
 
-    pi =  np.sqrt(p_cb * p_mm)
+    #pi =  np.sqrt(p_cb * p_mm)
+    pi = p_mm
     
     # Now do the RSD
     modPT = LPT_RSD(ki, pi, kIR=0.2, jn=5,\
@@ -75,14 +76,14 @@ def compute_phalofit(pars, z=0.61):
     #OmegaM, h, sigma8 = pars
     OmegaM, h, lnAs = pars
     
-    omega_b = 0.02242
+    omega_b = 0.02303
 
     #lnAs =  3.047
-    ns = 0.9665
+    ns = 0.96
 
-    nnu = 1
-    nur = 2.033
-    mnu = 0.06
+    nnu = 0
+    nur = 3.046
+    mnu = 0
     omega_nu = 0.0106 * mnu
         
     omega_c = (OmegaM - omega_b/h**2 - omega_nu/h**2) * h**2
@@ -97,7 +98,6 @@ def compute_phalofit(pars, z=0.61):
         'h': h,
         'N_ur': nur,
         'N_ncdm': nnu,
-        'm_ncdm': mnu,
         'tau_reio': 0.0568,
         'omega_b': omega_b,
         'omega_cdm': omega_c}
