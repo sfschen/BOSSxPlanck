@@ -68,5 +68,5 @@ g.triangle_plot(chains,\
                 legend_labels=legnd,\
                 filled=[True,True,True,False,False],\
                 alphas=[1.00,0.40,0.40,1.000,1.000])
-g.export('corner_plot.pdf')
+g.export('corner_zall.pdf')
 #
