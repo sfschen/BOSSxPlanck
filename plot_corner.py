@@ -61,12 +61,12 @@ for cc in chains:
 
 
 # Do the corner plot.
-g = gdplt.get_subplot_plotter()
+g = gdplt.get_subplot_plotter(subplot_size_ratio=0.7)
 g.triangle_plot(chains,\
                 ["omegam","H0","sigma8"],\
                 colors=clist,line_args=llist,\
                 legend_labels=legnd,\
                 filled=[True,True,True,False,False],\
                 alphas=[1.00,0.40,0.40,1.000,1.000])
-g.export('corner_plot.pdf')
+g.export('corner_zall.pdf')
 #
