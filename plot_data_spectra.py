@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # Plots the power spectra (angular or multipole) and correlation
-# functions for the # data and a fiducial model for each hemisphere
+# functions for the data and a fiducial model for each hemisphere
 # and redshift.
 #
 import numpy as np
@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 # Set up some labels, colors and linestyles to be
 # shared by all of the figures.
-zlst = [0.38,0.61]  # Effective redshifts.
+zlst = [0.38,0.59]  # Effective redshifts.
 clst = ['C0','C1']  # Colors for NGC/SGC
 llst = ['--',':' ]
 
