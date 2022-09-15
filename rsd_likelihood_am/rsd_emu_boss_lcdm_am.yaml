@@ -1,0 +1,277 @@
+# Sample Yaml File for the Full BOSS Analysis
+# To run in your directory, subsitute the basedir where the BOSSxPlanck repo is kept
+# e.g. in my case its path is /global/cscratch1/sd/mwhite/BOSS/Cobaya
+#
+theory:
+  joint_likelihood_gc_emu_am.Taylor_pk_theory_zs:
+      zfids:
+      - 0.59
+      - 0.38
+      pk_filenames:
+      - BOSSxPlanck/emulator/emu/boss_z_0.59_pkells.json
+      - BOSSxPlanck/emulator/emu/boss_z_0.38_pkells.json
+      xi_filenames:
+      - BOSSxPlanck/emulator/emu/boss_z_0.59_xiells.json
+      - BOSSxPlanck/emulator/emu/boss_z_0.38_xiells.json
+      s8_filename: BOSSxPlanck/emulator/emu/boss_s8.json
+      basedir: /global/cscratch1/sd/sfschen/BOSSxPlanck/
+      stop_at_error: True
+      
+likelihood:
+  joint_boss_likelihoods_emu_am.FullShapePlusBAOEmu_Z3:
+    basedir: /global/cscratch1/sd/sfschen/BOSSxPlanck/
+    linear_param_dict_fn: BOSSxPlanck/rsd_likelihood_am/bossz3_rsd_linear_params.yaml
+    zfid: 0.59
+    fs_kmins:
+    - 0.02
+    - 0.02
+    fs_mmaxs:
+    - 0.20
+    - 0.20
+    fs_qmaxs:
+    - 0.20
+    - 0.20
+    bao_rmins:
+    - 80.
+    bao_rmaxs:
+    - 130.
+    stop_at_error: True
+    
+  joint_boss_likelihoods_emu_am.FullShapePlusBAOEmu_Z1:
+    basedir: /global/cscratch1/sd/sfschen/BOSSxPlanck/
+    linear_param_dict_fn: BOSSxPlanck/rsd_likelihood_am/bossz1_rsd_linear_params.yaml
+    zfid: 0.38
+    fs_kmins:
+    - 0.02
+    - 0.02
+    fs_mmaxs:
+    - 0.20
+    - 0.20
+    fs_qmaxs:
+    - 0.20
+    - 0.20
+    bao_rmins:
+    - 80.
+    bao_rmaxs:
+    - 130.
+    stop_at_error: True
+
+params:
+  H0:
+    prior:
+      min: 60.0
+      max: 80.0
+    ref:
+      dist: norm
+      loc:  69.2267
+      scale: 1.0
+    latex: H_0
+  omegam:
+    prior:
+      min: 0.2
+      max: 0.4
+    ref:
+      dist: norm
+      loc: 0.31114202
+      scale: 0.05
+    latex: \Omega_\mathrm{m}
+  logA:
+    prior:
+      dist: uniform
+      min:  1.61
+      max:  3.91
+    ref:
+      dist:  norm
+      loc:   2.90
+      scale: 0.05
+    latex: \log(10^{10} A_\mathrm{s})
+  sigma8:
+    latex: \sigma_8
+    
+  # NGCz3
+  bsig8_NGCz3:
+    prior:
+      dist: uniform
+      min:  0.5
+      max:  3.0
+    ref:
+      dist:  norm
+      loc:   1.8254628 
+      scale: 0.05
+    latex: (1+b_1^{N3})\sigma_8
+  b2_NGCz3:
+    prior:
+      dist:  norm
+      loc:   0.0
+      scale: 10.
+    ref:
+      dist:  norm
+      loc:   -2.8775721
+      scale: 0.1
+    latex: b_2^{N3}
+  bs_NGCz3:
+    prior:
+      dist:  norm
+      loc:   0.0
+      scale: 5.0
+    ref:
+      dist:  norm
+      loc:   1.3425739
+      scale: 0.1
+    latex: b_s^{N3}
+
+  # SGCz3
+  bsig8_SGCz3:
+    prior:
+      dist: uniform
+      min:  0.5
+      max:  3.0
+    ref:
+      dist:  norm
+      loc:   1.7090505
+      scale: 0.05
+    latex: (1+b_1^{S3})\sigma_8
+  b2_SGCz3:
+    prior:
+      dist:  norm
+      loc:   0.0
+      scale: 10.
+    ref:
+      dist:  norm
+      loc:   0.82613992
+      scale: 0.1
+    latex: b_2^{S3}
+  bs_SGCz3:
+    prior:
+      dist:  norm
+      loc:   0.0
+      scale: 5.0
+    ref:
+      dist:  norm
+      loc:   -1.401814
+      scale: 0.1
+    latex: b_s^{S3}
+
+  # NGCz1
+  bsig8_NGCz1:
+    prior:
+      dist: uniform
+      min:  0.5
+      max:  3.0
+    ref:
+      dist:  norm
+      loc:   1.7003233
+      scale: 0.05
+    latex: (1+b_1^{N1})\sigma_8
+  b2_NGCz1:
+    prior:
+      dist:  norm
+      loc:   0.0
+      scale: 10.
+    ref:
+      dist:  norm
+      loc:   -1.3032863
+      scale: 0.1
+    latex: b_2^{N1}
+  bs_NGCz1:
+    prior:
+      dist:  norm
+      loc:   0.0
+      scale: 5.0
+    ref:
+      dist:  norm
+      loc:   1.1374705
+      scale: 0.1
+    latex: b_s^{N1}
+
+  # SGCz1
+  bsig8_SGCz1:
+    prior:
+      dist: uniform
+      min:  0.5
+      max:  3.0
+    ref:
+      dist:  norm
+      loc:   1.5666217
+      scale: 0.05
+    latex: (1+b_1^{S1})\sigma_8
+  b2_SGCz1:
+    prior:
+      dist:  norm
+      loc:   0.0
+      scale: 10.
+    ref:
+      dist:  norm
+      loc:   -0.54533033
+      scale: 0.1
+    latex: b_2^{S1}
+  bs_SGCz1:
+    prior:
+      dist:  norm
+      loc:   0.0
+      scale: 5.0
+    ref:
+      dist:  norm
+      loc:   0.7529962
+      scale: 0.1
+    latex: b_s^{S1}
+
+    
+  # Post-recon parameters
+  B1_z3:
+    prior:
+      dist: uniform
+      min: 0.0
+      max: 5.0
+    ref:
+      dist: norm
+      loc: 1.12
+      scale: 0.1
+    latex: B_1^{z3}
+  F_z3:
+    prior:
+      dist: uniform
+      min: 0.0
+      max: 5.0
+    ref:
+      dist: norm
+      loc: 0.63
+      scale: 0.1
+    latex: F^{z3}
+
+  B1_z1:
+    prior:
+      dist: uniform
+      min: 0.0
+      max: 5.0
+    ref:
+      dist: norm
+      loc: 1.12
+      scale: 0.1
+    latex: B_1^{z1}
+  F_z1:
+    prior:
+      dist: uniform
+      min: 0.0
+      max: 5.0
+    ref:
+      dist: norm
+      loc: 0.63
+      scale: 0.1
+    latex: F^{z1}
+
+
+sampler:
+  mcmc:
+    covmat: covini/boss_rsd.covini
+    learn_proposal: True
+    learn_proposal_Rminus1_max: 5.
+    output_every: 60s
+    measure_speeds: True
+    max_tries: 500
+    oversample_power: 0.4
+    proposal_scale: 1.5
+    Rminus1_stop: 0.01
+output: chains/rsd_emu_boss_lcdm
+timing: True
+stop_on_error: True

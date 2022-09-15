@@ -1,0 +1,19 @@
+zfid:     0.61
+
+fs_sample_names:
+- NGCz3
+
+# The file paths below assume the chain/code will be
+# running in the directory where the BOSSxPlanck repo
+# has been cloned.  Otherwise, override these with the
+# full path.
+fs_datfns: 
+- BOSSxPlanck/rsd_data/pk/pk_NGC_z3.dat
+
+covfn: BOSSxPlanck/rsd_data/covariances/cov_NGC_z3_n1000.dat
+
+fs_matMfns: 
+- BOSSxPlanck/rsd_data/matrices/M_BOSS_DR12_NGC_z3_V6C_1_1_1_1_1_1200_2000.matrix.gz
+
+fs_matWfns: 
+- BOSSxPlanck/rsd_data/matrices/W_BOSS_DR12_NGC_z3_V6C_1_1_1_1_1_10_200_2000_averaged_v1.matrix.gz
