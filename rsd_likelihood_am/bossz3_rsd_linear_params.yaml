@@ -15,7 +15,7 @@ SN2_NGCz3:
   mean:   0.0
   std: 5.0e+4
 
-  # SGCz3
+# SGCz3
 alpha0_SGCz3:
   mean:   0.0
   std: 30.
@@ -44,10 +44,6 @@ M1_z3:
   mean: 0.
   std: 5.
   
-M2_z3:
-  mean: 0.
-  std: 1.0e-5
-  
 Q0_z3:
   mean: 0.
   std: 5.0e-2
@@ -55,7 +51,3 @@ Q0_z3:
 Q1_z3:
   mean: 0.
   std: 5.
-  
-Q2_z3:
-  mean: 0.
-  std: 1.0e-5

@@ -43,11 +43,7 @@ M0_z1:
 M1_z1:
   mean: 0.
   std: 5.
-  
-M2_z1:
-  mean: 0.
-  std: 1.0e-5
-  
+
 Q0_z1:
   mean: 0.
   std: 5.0e-2
@@ -55,7 +51,3 @@ Q0_z1:
 Q1_z1:
   mean: 0.
   std: 5.
-
-Q2_z1:
-  mean: 0.
-  std: 1.0e-5

@@ -149,7 +149,7 @@ class JointLikelihood(Likelihood):
         
         # Make dot products
         self.Va = np.dot(np.dot(self.templates, self.cinv), self.Delta)
-        self.Lab = np.dot(np.dot(self.templates, self.cinv), self.templates.T)
+        self.Lab = np.dot(np.dot(self.templates, self.cinv), self.templates.T) + np.diag(1./self.linear_param_stds**2)
         #self.Va = np.einsum('ij,jk,k', self.templates, self.cinv, self.Delta)
         #self.Lab = np.einsum('ij,jk,lk', self.templates, self.cinv, self.templates) + np.diag(1./self.linear_param_stds**2)
         self.Lab_inv = np.linalg.inv(self.Lab)
@@ -157,7 +157,7 @@ class JointLikelihood(Likelihood):
         
         # Compute the modified chi2
         lnL  = -0.5 * np.dot(self.Delta,np.dot(self.cinv,self.Delta)) # this is the "bare" lnL
-        lnL += 0.5 * np.dot(self.Va, np.dot(self.Lab_inv, self.Va)) # improvement in chi2 due to changing linear params
+        lnL +=  0.5 * np.dot(self.Va, np.dot(self.Lab_inv, self.Va)) # improvement in chi2 due to changing linear params
         lnL += - np.log( np.linalg.det(self.Lab) ) + self.Nlin * np.log(2*np.pi) # volume factor from the determinant
         
         #t5 = time.time()
@@ -378,11 +378,11 @@ class JointLikelihood(Likelihood):
         
         # Analytically marginalize linear parmaeters so these are obtained differently
         if thetas is None:
-            M0, M1, M2 = [self.linear_param_means[param_name + '_' + bao_sample_name] for param_name in ['M0','M1','M2']]
-            Q0, Q1, Q2 = [self.linear_param_means[param_name + '_' + bao_sample_name] for param_name in ['Q0','Q1','Q2']]
+            M0, M1 = [self.linear_param_means[param_name + '_' + bao_sample_name] for param_name in ['M0','M1',]]
+            Q0, Q1 = [self.linear_param_means[param_name + '_' + bao_sample_name] for param_name in ['Q0','Q1',]]
         else:
-            M0, M1, M2 = [thetas[param_name + '_' + bao_sample_name] for param_name in ['M0','M1','M2']]
-            Q0, Q1, Q2 = [thetas[param_name + '_' + bao_sample_name] for param_name in ['Q0','Q1','Q2']]
+            M0, M1, = [thetas[param_name + '_' + bao_sample_name] for param_name in ['M0','M1',]]
+            Q0, Q1, = [thetas[param_name + '_' + bao_sample_name] for param_name in ['Q0','Q1',]]
             
         #M0, M1, M2 = [pp.get_param(param_name + '_' + bao_sample_name) for param_name in ['M0','M1','M2']]
         #Q0, Q1, Q2 = [pp.get_param(param_name + '_' + bao_sample_name) for param_name in ['Q0','Q1','Q2']]
@@ -396,8 +396,8 @@ class JointLikelihood(Likelihood):
         xi2t = xi2table[:,0] + B1*xi2table[:,1] + F*xi2table[:,2] \
              + B1**2 * xi2table[:,3] + F**2 * xi2table[:,4] + B1*F*xi2table[:,5]
         
-        xi0t += polyval(1/rvec,[M0,M1,M2])
-        xi2t += polyval(1/rvec,[Q0,Q1,Q2])
+        xi0t += polyval(1/rvec,[M0,M1])
+        xi2t += polyval(1/rvec,[Q0,Q1])
         
         return np.array([rvec,xi0t,xi2t]).T
     
