@@ -158,7 +158,7 @@ class JointLikelihood(Likelihood):
         # Compute the modified chi2
         lnL  = -0.5 * np.dot(self.Delta,np.dot(self.cinv,self.Delta)) # this is the "bare" lnL
         lnL +=  0.5 * np.dot(self.Va, np.dot(self.Lab_inv, self.Va)) # improvement in chi2 due to changing linear params
-        lnL += - np.log( np.linalg.det(self.Lab) ) + self.Nlin * np.log(2*np.pi) # volume factor from the determinant
+        lnL += - 0.5 * np.log( np.linalg.det(self.Lab) ) + 0.5 * self.Nlin * np.log(2*np.pi) # volume factor from the determinant
         
         #t5 = time.time()
         
