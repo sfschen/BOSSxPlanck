@@ -32,7 +32,11 @@ class JointLikelihood(Likelihood):
     fs_sample_names: list
     bao_sample_names: list
     
+    # optimize: turn this on when optimizng/running the minimizer so that the Jacobian factor isn't included
+    # include_priors: this decides whether the marginalized parameter priors are included (should be yes)
     linear_param_dict_fn: str
+    optimize: bool
+    include_priors: bool
     
     fs_datfns: list
     bao_datfns: list
@@ -149,7 +153,7 @@ class JointLikelihood(Likelihood):
         
         # Make dot products
         self.Va = np.dot(np.dot(self.templates, self.cinv), self.Delta)
-        self.Lab = np.dot(np.dot(self.templates, self.cinv), self.templates.T) + np.diag(1./self.linear_param_stds**2)
+        self.Lab = np.dot(np.dot(self.templates, self.cinv), self.templates.T) + self.include_priors * np.diag(1./self.linear_param_stds**2)
         #self.Va = np.einsum('ij,jk,k', self.templates, self.cinv, self.Delta)
         #self.Lab = np.einsum('ij,jk,lk', self.templates, self.cinv, self.templates) + np.diag(1./self.linear_param_stds**2)
         self.Lab_inv = np.linalg.inv(self.Lab)
@@ -158,7 +162,8 @@ class JointLikelihood(Likelihood):
         # Compute the modified chi2
         lnL  = -0.5 * np.dot(self.Delta,np.dot(self.cinv,self.Delta)) # this is the "bare" lnL
         lnL +=  0.5 * np.dot(self.Va, np.dot(self.Lab_inv, self.Va)) # improvement in chi2 due to changing linear params
-        lnL += - 0.5 * np.log( np.linalg.det(self.Lab) ) + 0.5 * self.Nlin * np.log(2*np.pi) # volume factor from the determinant
+        if not self.optimize:
+            lnL += - 0.5 * np.log( np.linalg.det(self.Lab) ) + 0.5 * self.Nlin * np.log(2*np.pi) # volume factor from the determinant
         
         #t5 = time.time()
         
